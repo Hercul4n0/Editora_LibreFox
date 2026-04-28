@@ -13,7 +13,7 @@ public class Relatorio {
     // Armazena a quantidade de obras encontradas no relatório
     private short numDeObras;
 
-    // Armazena o avaliador responsável pelas avaliações
+    // Armazena o avaliador responsável pelas por avaliar as obras
     private Avaliador avaliadoPor;
 
     // Lista que armazena as obras incluídas no relatório
