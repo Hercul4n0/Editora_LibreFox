@@ -18,7 +18,7 @@ public class Data {
         setAno(ano);
     }
 
-    // Retorna o dia armazenado
+    // Retorna o dia corresponsdente armazenado
     public short getDia() {
         return dia;
     }
