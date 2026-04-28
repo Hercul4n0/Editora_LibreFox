@@ -69,7 +69,13 @@ public class Editora{
         
      }
     }
-    //MÉTODOS DE BUSCA
+    
+    //MÉTODOS DE OBRA
+        public void cadastrarObra (Obra obra){
+            obras.add(obra); 
+        }
+
+    //MÉTODOS DE BUSCA DE OBRAS
     
     public List<Obra> buscarObraTitulo (String titulo){
         List<Obra> obrasEncontradas = new ArrayList<>();
@@ -139,6 +145,80 @@ public class Editora{
         //Se for vazio, retorna uma lista vazia
         return obrasEncontradas;
     }
+    //MÉTODOS DE BUSCA DE AVALIADORES
+
+    public List<Avaliador> buscarAvaliadorNome (String nome){
+        List<Avaliador> avaliadoresEncontrados = new ArrayList<>();
+        if (nome == null){
+                System.out.println("Nome do avaliador não pode ser vazio");
+        }
+        for (Avaliador a : avaliadores) {
+            if (a.getNome().equals(nome)) {
+                avaliadoresEncontrados.add(a);
+                System.out.println("Avaliador encontrado: " + a.getNome());}
+        }
+        if (avaliadoresEncontrados.isEmpty()) {
+            System.out.println("Nenhum avaliador encontrado com esse nome " + nome);
+        }
+        //Se for vazio, retorna uma lista vazia
+        return avaliadoresEncontrados;
+    }
+
+    public List<Avaliador> buscarAvaliadorObra (String tituloObra){
+        List<Avaliador> avaliadoresEncontrados = new ArrayList<>();
+        if (tituloObra == null){
+                System.out.println("Título da obra não pode ser vazio");
+        }
+        for (Avaliador a : avaliadores) {
+            for (Obra o : a.ObrasparaAvaliar) {
+                if (o.getTitulo().equals(tituloObra)) {
+                    avaliadoresEncontrados.add(a);
+                    System.out.println("Avaliador encontrado: " + a.getNome());}
+            }
+        }
+        if (avaliadoresEncontrados.isEmpty()) {
+            System.out.println("Nenhum avaliador encontrado para a obra " + tituloObra);
+        }
+        //Se for vazio, retorna uma lista vazia
+        return avaliadoresEncontrados;
+    }
+    //MÉTODOS DE BUSCA DE AUTORES
+
+    public List<Autor> buscarAutorNome (String nome){
+        List<Autor> autoresEncontrados = new ArrayList<>();
+        if (nome == null){
+                System.out.println("Nome do autor não pode ser vazio");
+        }
+        for (Autor a : autores) {
+            if (a.getNome().equals(nome)) {
+                autoresEncontrados.add(a);
+                System.out.println("Autor encontrado: " + a.getNome());}
+        }
+        if (autoresEncontrados.isEmpty()) {
+            System.out.println("Nenhum autor encontrado com esse nome " + nome);
+        }
+        //Se for vazio, retorna uma lista vazia
+        return autoresEncontrados;
+    }
+
+    public List<Autor> buscarAutorObra (String tituloObra){
+        List<Autor> autoresEncontrados = new ArrayList<>();
+        if (tituloObra == null){
+                System.out.println("Título da obra não pode ser vazio");
+        }
+        for (Autor a : autores) {
+            for (Obra o : a.getObrasEnviadas()) {
+                if (o.getTitulo().equals(tituloObra)) {
+                    autoresEncontrados.add(a);
+                    System.out.println("Autor encontrado: " + a.getNome());}
+            }
+        }
+        if (autoresEncontrados.isEmpty()) {
+            System.out.println("Nenhum autor encontrado para a obra " + tituloObra);
+        }
+        //Se for vazio, retorna uma lista vazia
+        return autoresEncontrados;
+    }   
 }
 
 

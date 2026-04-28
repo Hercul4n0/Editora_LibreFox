@@ -11,6 +11,7 @@ public class Obra {
 
     public Obra (String titulo, String genero, Short ano, Short status, Autor autor, String id){
         setTitulo(titulo); setGenero(genero); setAno(ano); setStatus(status); setAutor(autor); setId(id);
+        
     }
     public Obra (String titulo, Short status, Autor autor, String id){
         setTitulo(titulo); setStatus(status); setAutor(autor); setId(id);
@@ -78,6 +79,7 @@ public class Obra {
     public void setAvaliador (Obra obra, Avaliador avaliador, Editora editora, Gerente gerente){
          if (editora.getGerenteCpf().equals(gerente.getCpf())) {
             obra.setAvaliador(avaliador);
+            avaliador.ObrasparaAvaliar.add(obra);
         }
     }
 }
