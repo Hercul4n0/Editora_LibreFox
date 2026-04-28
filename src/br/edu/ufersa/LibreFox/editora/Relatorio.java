@@ -21,9 +21,10 @@ public class Relatorio {
 
     // Construtor da classe
     public Relatorio(Data dataInicial, Data dataFinal, Avaliador avaliadoPor) {
-        this.dataInicial = dataInicial;
-        this.dataFinal = dataFinal;
-        this.avaliadoPor = avaliadoPor;
+        setDataInicial(dataInicial);
+        setDataFinal(dataFinal);
+        setAvaliadoPor(avaliadoPor);
+
         this.obras = new ArrayList<>();
         this.numDeObras = 0;
     }
@@ -33,9 +34,13 @@ public class Relatorio {
         return dataInicial;
     }
 
-    // Altera a data inicial
+    // Altera a data inicial se não for nula
     public void setDataInicial(Data dataInicial) {
-        this.dataInicial = dataInicial;
+        if (dataInicial != null) {
+            this.dataInicial = dataInicial;
+        } else {
+            System.out.println("Data inicial inválida.");
+        }
     }
 
     // Retorna a data final
@@ -43,9 +48,13 @@ public class Relatorio {
         return dataFinal;
     }
 
-    // Altera a data final
+    // Altera a data final se não for nula
     public void setDataFinal(Data dataFinal) {
-        this.dataFinal = dataFinal;
+        if (dataFinal != null) {
+            this.dataFinal = dataFinal;
+        } else {
+            System.out.println("Data final inválida.");
+        }
     }
 
     // Retorna a quantidade de obras
@@ -58,9 +67,13 @@ public class Relatorio {
         return avaliadoPor;
     }
 
-    // Altera o avaliador responsável
+    // Altera o avaliador responsável se não for nulo
     public void setAvaliadoPor(Avaliador avaliadoPor) {
-        this.avaliadoPor = avaliadoPor;
+        if (avaliadoPor != null) {
+            this.avaliadoPor = avaliadoPor;
+        } else {
+            System.out.println("Avaliador inválido.");
+        }
     }
 
     // Adiciona uma obra à lista do relatório
@@ -68,6 +81,8 @@ public class Relatorio {
         if (obra != null) {
             obras.add(obra);
             numDeObras++;
+        } else {
+            System.out.println("Obra inválida.");
         }
     }
 
@@ -76,9 +91,16 @@ public class Relatorio {
         System.out.println("===== RELATÓRIO =====");
 
         System.out.print("Período: ");
-        dataInicial.ExibirData();
+
+        if (dataInicial != null) {
+            System.out.print(dataInicial.getDia() + "/" + dataInicial.getMes() + "/" + dataInicial.getAno());
+        }
+
         System.out.print(" até ");
-        dataFinal.ExibirData();
+
+        if (dataFinal != null) {
+            System.out.println(dataFinal.getDia() + "/" + dataFinal.getMes() + "/" + dataFinal.getAno());
+        }
 
         System.out.println("Número de Obras: " + numDeObras);
 
