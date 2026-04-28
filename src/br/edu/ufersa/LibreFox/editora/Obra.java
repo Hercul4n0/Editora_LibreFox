@@ -5,14 +5,15 @@ public class Obra {
     private Short ano, status;
     private Autor autor;
     private Avaliador avaliador;
+    private String id;
     
     //Construtores
 
-    public Obra (String titulo, String genero, Short ano, Short status, Autor autor){
-        setTitulo(titulo); setGenero(genero); setAno(ano); setStatus(status); setAutor(autor);
+    public Obra (String titulo, String genero, Short ano, Short status, Autor autor, String id){
+        setTitulo(titulo); setGenero(genero); setAno(ano); setStatus(status); setAutor(autor); setId(id);
     }
-    public Obra (String titulo, Short status, Autor autor){
-        setTitulo(titulo); setStatus(status); setAutor(autor);
+    public Obra (String titulo, Short status, Autor autor, String id){
+        setTitulo(titulo); setStatus(status); setAutor(autor); setId(id);
     }
 
     //Alterar
@@ -62,4 +63,21 @@ public class Obra {
         return autor;
     }   
 
+    public void setAvaliador (Avaliador avaliador){ 
+        this.avaliador = avaliador;
+    }
+    public void setId (String id){
+        if (this.id!= null) {
+            this.id = id; }
+    }
+    
+    public String getId (){
+        return id;
+    }
+
+    public void setAvaliador (Obra obra, Avaliador avaliador, Editora editora, Gerente gerente){
+         if (editora.getGerenteCpf().equals(gerente.getCpf())) {
+            obra.setAvaliador(avaliador);
+        }
+    }
 }
