@@ -59,7 +59,9 @@ public class Editora{
         }
      
     //MÉTODOS DE AVALIADOR
-    // Restringe a avaliação de obras aos avaliadores cadastrados
+    //Restringe a avaliação de obras aos avaliadores cadastrados
+    //Status 1 = Em análise; Status 2 = Rejeitado; Status 3 = Aprovado
+    //Feito dessa maneira para economizar performance, ainda irei achar um método melhor
     public void avaliarObra (Avaliador avaliador, Obra obra, Short status){
        for (Avaliador a : avaliadores) { 
             if (a.getCpf().equals(avaliador.getCpf())) {
@@ -170,7 +172,7 @@ public class Editora{
                 System.out.println("Título da obra não pode ser vazio");
         }
         for (Avaliador a : avaliadores) {
-            for (Obra o : a.ObrasparaAvaliar) {
+            for (Obra o : a.getObrasParaAvaliar()) {
                 if (o.getTitulo().equals(tituloObra)) {
                     avaliadoresEncontrados.add(a);
                     System.out.println("Avaliador encontrado: " + a.getNome());}
