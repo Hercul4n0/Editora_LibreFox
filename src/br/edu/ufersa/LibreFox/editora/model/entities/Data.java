@@ -1,4 +1,4 @@
-package br.edu.ufersa.LibreFox.editora;
+package br.edu.ufersa.LibreFox.editora.model.entities;
 
 public class Data {
 

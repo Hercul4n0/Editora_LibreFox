@@ -1,4 +1,4 @@
-package br.edu.ufersa.LibreFox.editora;
+package br.edu.ufersa.LibreFox.editora.model.entities;
 import java.time.LocalDate;
 
 public class Obra {
@@ -8,7 +8,7 @@ public class Obra {
     private Avaliador avaliador;
     private String id;
     private LocalDate dataDeCadastro;
-    private LocalDate dataDeAprovação;
+    private LocalDate dataDeAprovacao;
     
     //Construtores
 
@@ -83,6 +83,22 @@ public class Obra {
     
     public String getId (){
         return id;
+    }
+
+    public void setDataDeCadastro (){
+        this.dataDeCadastro = LocalDate.now();
+    }
+
+    public LocalDate getDataDeCadastro (){
+        return  dataDeCadastro;
+    }
+
+    public void setDataDeAprovacao (){
+        this.dataDeAprovacao = LocalDate.now();
+    }
+
+    public LocalDate getDataDeAprovacao (){
+        return dataDeAprovacao;
     }
 
 

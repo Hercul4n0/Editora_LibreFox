@@ -1,4 +1,5 @@
-package br.edu.ufersa.LibreFox.editora;
+package br.edu.ufersa.LibreFox.editora.model.entities;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,6 +67,9 @@ public class Editora{
        for (Avaliador a : avaliadores) { 
             if (a.getCpf().equals(avaliador.getCpf())) {
                 obra.setStatus(status);
+                if (status != 1) {
+                    obra.setDataDeAprovacao();
+                }
             }
             else {System.out.println("Avaliador não cadastrado");}
         
@@ -74,7 +78,8 @@ public class Editora{
     
     //MÉTODOS DE OBRA
         public void cadastrarObra (Obra obra){
-            obras.add(obra); 
+            obras.add(obra); obra.setDataDeCadastro();
+
         }
 
     //MÉTODOS DE BUSCA DE OBRAS
@@ -147,6 +152,25 @@ public class Editora{
         //Se for vazio, retorna uma lista vazia
         return obrasEncontradas;
     }
+
+    public List<Obra> buscarObraPeriodo (LocalDate dataInicio, LocalDate dataFim){
+        List <Obra> obrasEncontradas = new ArrayList<>();
+        LocalDate dataLida = dataInicio;
+        if (dataInicio == null){
+            //Solução hardcoded presumindo que o software irá lançar em 01/06/2026
+            dataInicio = LocalDate.of(2026,6,1); dataLida = LocalDate.of(2026,6,1);
+        }
+        if (dataFim == null){
+            dataFim = LocalDate.now();
+        }
+        for (Obra o : obras){
+            if (o.getDataDeAprovacao().isEqual(dataLida)) {
+                obrasEncontradas.add(o);
+            }
+        }
+        return obrasEncontradas;
+    }
+
     //MÉTODOS DE BUSCA DE AVALIADORES
 
     public List<Avaliador> buscarAvaliadorNome (String nome){
@@ -184,6 +208,7 @@ public class Editora{
         //Se for vazio, retorna uma lista vazia
         return avaliadoresEncontrados;
     }
+
     //MÉTODOS DE BUSCA DE AUTORES
 
     public List<Autor> buscarAutorNome (String nome){

@@ -1,4 +1,4 @@
-package br.edu.ufersa.LibreFox.editora;
+package br.edu.ufersa.LibreFox.editora.model.entities;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
