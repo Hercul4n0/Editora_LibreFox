@@ -1,4 +1,4 @@
-package br.edu.ufersa.LibreFox.editora;
+package br.edu.ufersa.LibreFox.editora.model.entities;
 import java.time.LocalDate;
 
 public class Obra {
