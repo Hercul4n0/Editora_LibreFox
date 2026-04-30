@@ -1,14 +1,14 @@
 package br.edu.ufersa.LibreFox.editora.model.entities;
-import java.time.LocalDate;
+
 import java.util.ArrayList;
 
 public class Relatorio {
 
     // Armazena a data inicial do período do relatório
-    private LocalDate dataInicial;
+    private Data dataInicial;
 
     // Armazena a data final do período do relatório
-    private LocalDate dataFinal;
+    private Data dataFinal;
 
     // Armazena a quantidade de obras encontradas no relatório
     private short numDeObras;
@@ -20,7 +20,9 @@ public class Relatorio {
     private ArrayList<Obra> obras;
 
     // Construtor da classe
-    public Relatorio(LocalDate dataInicial, LocalDate dataFinal, Avaliador avaliadoPor) {
+    public Relatorio(Data dataInicial, Data dataFinal, Avaliador avaliadoPor) {
+        setDataInicial(dataInicial);
+        setDataFinal(dataFinal);
         setAvaliadoPor(avaliadoPor);
 
         this.obras = new ArrayList<>();
@@ -110,7 +112,7 @@ public class Relatorio {
 
         // Percorre a lista de obras e exibe seus dados
         for (Obra obra : obras) {
-            obra.BuscarObraPeríodo(dataInicial, dataFinal);
+            obra.Buscar();
             System.out.println("-------------------");
         }
     }
