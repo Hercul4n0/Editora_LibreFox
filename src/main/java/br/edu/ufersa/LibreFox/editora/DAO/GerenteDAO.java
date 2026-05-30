@@ -1,5 +1,5 @@
-package br.edu.ufersa.LibreFox.editora.DAO;
-import br.edu.ufersa.LibreFox.editora.entities.Gerente;
+package main.java.br.edu.ufersa.LibreFox.editora.DAO;
+import main.java.br.edu.ufersa.LibreFox.editora.entities.Gerente;
 
 import java.sql.*;
 import java.util.ArrayList;

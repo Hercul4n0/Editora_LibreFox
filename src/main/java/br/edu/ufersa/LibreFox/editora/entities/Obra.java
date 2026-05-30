@@ -1,4 +1,4 @@
-package br.edu.ufersa.LibreFox.editora.entities;
+package main.java.br.edu.ufersa.LibreFox.editora.entities;
 
 public class Obra {
     private String titulo, genero;

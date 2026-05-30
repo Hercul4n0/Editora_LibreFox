@@ -1,4 +1,4 @@
-package br.edu.ufersa.LibreFox.editora.DAO;
+package main.java.br.edu.ufersa.LibreFox.editora.DAO;
 import java.util.ArrayList;
 
 public interface BaseDAO <T>{

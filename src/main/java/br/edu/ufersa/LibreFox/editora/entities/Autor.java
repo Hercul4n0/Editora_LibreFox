@@ -1,4 +1,4 @@
-package br.edu.ufersa.LibreFox.editora.entities;
+package main.java.br.edu.ufersa.LibreFox.editora.entities;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +14,6 @@ public class Autor extends Usuario {
     public void enviarObra (Obra obra, Editora editora){
         obrasEnviadas.add(obra);
     }
-    
     public List<Obra> getObrasEnviadas (){
         return obrasEnviadas;
     }

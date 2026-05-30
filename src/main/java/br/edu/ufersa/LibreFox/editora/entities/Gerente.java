@@ -1,4 +1,4 @@
-package br.edu.ufersa.LibreFox.editora.entities;
+package main.java.br.edu.ufersa.LibreFox.editora.entities;
 
 public class Gerente extends Usuario{
     public Gerente (String nome, String cpf, String endereco){
