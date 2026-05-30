@@ -3,10 +3,12 @@ package br.edu.ufersa.LibreFox.editora.entities;
 
 public class Usuario {
     
-
+    private long id;
     private String nome;
     private String cpf;
     private String endereco;
+    private String login;
+    private String senha;
 
 
     //CONSTRUTORES
@@ -37,6 +39,21 @@ public class Usuario {
     
     public String getEndereco (){
         return endereco;
+    }
+
+    public String getLogin (){
+        return login;
+    }
+    public String getSenha (){
+        return senha;
+    }
+
+    public long getId (){
+        return id;
+    }
+
+    public void setId (long id){
+        this.id = id;
     }
 
 }
