@@ -67,6 +67,7 @@ public class Relatorio {
         return avaliadoPor;
     }
 
+    public ArrayList<Obra> getObras(){return this.obras;}
     // Altera o avaliador responsável se não for nulo
     public void setAvaliadoPor(Avaliador avaliadoPor) {
         if (avaliadoPor != null) {
@@ -76,43 +77,4 @@ public class Relatorio {
         }
     }
 
-    // Adiciona uma obra à lista do relatório
-    public void AdicionarObra(Obra obra) {
-        if (obra != null) {
-            obras.add(obra);
-            numDeObras++;
-        } else {
-            System.out.println("Obra inválida.");
-        }
-    }
-
-    // Exibe as informações do relatório
-    public void gerarRelatorio() {
-        System.out.println("===== RELATÓRIO =====");
-
-        System.out.print("Período: ");
-
-        if (dataInicial != null) {
-            System.out.print(dataInicial.getDia() + "/" + dataInicial.getMes() + "/" + dataInicial.getAno());
-        }
-
-        System.out.print(" até ");
-
-        if (dataFinal != null) {
-            System.out.println(dataFinal.getDia() + "/" + dataFinal.getMes() + "/" + dataFinal.getAno());
-        }
-
-        System.out.println("Número de Obras: " + numDeObras);
-
-        if (avaliadoPor != null) {
-            System.out.println("Avaliado por: " + avaliadoPor.getNome());
-        }
-
-        System.out.println("Obras no relatório:");
-
-        // Percorre a lista de obras e exibe seus dados
-        for (Obra obra : obras) {
-            System.out.println("-------------------");
-        }
-    }
 }
