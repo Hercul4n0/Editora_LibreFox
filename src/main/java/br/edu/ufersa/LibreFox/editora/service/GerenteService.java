@@ -1,5 +1,5 @@
 package main.java.br.edu.ufersa.LibreFox.editora.service;
-
+//GerenteService para GerenteDAO
 import main.java.br.edu.ufersa.LibreFox.editora.DAO.GerenteDAO;
 import main.java.br.edu.ufersa.LibreFox.editora.entities.Gerente;
 import java.util.ArrayList;
