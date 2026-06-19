@@ -1,94 +1,103 @@
-package main.java.br.edu.ufersa.LibreFox.editora.entities;
+package br.edu.ufersa.LibreFox.editora.entities;
+
+import java.util.EnumSet;
+import java.util.Set;
 
 public class Usuario {
-    
+
     private long id;
     private String nome;
     private String cpf;
-    private String endereco;
+    private Endereco endereco;
     private String login;
     private String senha;
+    private Set<Perfil> perfis = EnumSet.noneOf(Perfil.class);
 
-    private boolean isAutor;
-    private boolean isAvaliador;
-    private boolean isGerente;
-
-    //CONSTRUTORES
-    public Usuario (String nome, String cpf, String endereco,
-    String login, String senha, boolean isAutor, boolean isAvaliador, boolean isGerente){
-       setNome(nome); setCpf(cpf); setEndereco(endereco); setLogin(login); setSenha(senha);
-       setIsAutor(isAutor); setIsAvaliador(isAvaliador); setIsGerente(isGerente);
-
-    }
-    
-    //SETTERS E GETTERS
-    //checam se os campos estão vazios
-    public void setNome (String nome){ //Encap corrigido
-        if (nome != null) {
-            this.nome = nome; }
-    }
-    public String getNome (){
-        return nome;
+    public Usuario(String nome, String cpf, Endereco endereco,
+                   String login, String senha, Set<Perfil> perfis) {
+        setNome(nome);
+        setCpf(cpf);
+        setEndereco(endereco);
+        setLogin(login);
+        setSenha(senha);
+        setPerfis(perfis);
     }
 
-    public void setCpf (String cpf){ //Encap corrigido
-        if (cpf != null) {
-            this.cpf = cpf;}
-        }
-    public String getCpf (){
-        return cpf;
+    // -------------------------------------------------------------------------
+    // PERFIS
+    // -------------------------------------------------------------------------
+
+    public Set<Perfil> getPerfis() {
+        return perfis;
     }
 
-    public void setEndereco (String endereco){ // Encap corrigido
-        if (endereco != null) {
-            this.endereco = endereco;}
-        }
-    public String getEndereco (){
-        return endereco;
-    }
-
-    public void setLogin(String login){
-        if(login != null){
-            this.login = login;
-        }
-    } // Encap corrigido
-    public String getLogin (){
-        return login;
-    }
-
-    public void setSenha(String senha){ // Encap corrigido
-        if(senha != null){
-            this.senha = senha;
+    public void setPerfis(Set<Perfil> perfis) {
+        if (perfis != null && !perfis.isEmpty()) {
+            this.perfis = EnumSet.copyOf(perfis);
         }
     }
-    public String getSenha (){
-        return senha;
+
+    public void adicionarPerfil(Perfil perfil) {
+        this.perfis.add(perfil);
     }
 
-    public long getId (){
+    public void removerPerfil(Perfil perfil) {
+        this.perfis.remove(perfil);
+    }
+
+    public boolean temPerfil(Perfil perfil) {
+        return this.perfis.contains(perfil);
+    }
+
+    // -------------------------------------------------------------------------
+    // GETTERS E SETTERS
+    // -------------------------------------------------------------------------
+
+    public long getId() {
         return id;
     }
-    public void setId (long id){
+
+    public void setId(long id) {
         this.id = id;
     }
 
-
-    public void setIsAutor(boolean isAutor){
-        this.isAutor = isAutor;
-    }
-    public boolean getIsAutor(){
-        return this.isAutor;
+    public String getNome() {
+        return nome;
     }
 
-    public void setIsAvaliador(boolean isAvaliador){
-        this.isAvaliador = isAvaliador;
-    }
-    public boolean getIsAvaliador(){
-        return this.isAvaliador;
+    public void setNome(String nome) {
+        if (nome != null) this.nome = nome;
     }
 
-    public void setIsGerente(boolean isGerente){
-        this.isGerente = isGerente;
+    public String getCpf() {
+        return cpf;
+    }
+
+    public void setCpf(String cpf) {
+        if (cpf != null) this.cpf = cpf;
+    }
+
+    public Endereco getEndereco() {
+        return endereco;
+    }
+
+    public void setEndereco(Endereco endereco) {
+        if (endereco != null) this.endereco = endereco;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        if (login != null) this.login = login;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        if (senha != null) this.senha = senha;
     }
 }
-

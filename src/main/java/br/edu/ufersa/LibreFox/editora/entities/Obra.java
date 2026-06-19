@@ -1,85 +1,84 @@
-package main.java.br.edu.ufersa.LibreFox.editora.entities;
+package br.edu.ufersa.LibreFox.editora.entities;
+
+import java.time.LocalDate;
 
 public class Obra {
-    private String titulo, genero;
-    private Short ano, status;
+    private String id;
+    private String titulo;
+    private String genero;
+    private Short ano;
+    private Short status;
     private Autor autor;
     private Avaliador avaliador;
-    private String id;
-    
-    //Construtores
+    private LocalDate dataSubmissao;   // quando o autor enviou a obra
+    private LocalDate dataAvaliacao;   // quando o avaliador deu o veredicto
 
-    public Obra (String titulo, String genero, Short ano, Short status, Autor autor, String id){
-        setTitulo(titulo); setGenero(genero); setAno(ano); setStatus(status); setAutor(autor); setId(id);
-        
-    }
-    public Obra (String titulo, Short status, Autor autor, String id){
-        setTitulo(titulo); setStatus(status); setAutor(autor); setId(id);
-    }
-
-    //Alterar
-
-    public void setTitulo (String titulo){
-        if (this.titulo!= null) {
-            this.titulo = titulo; }
-    }
-
-    public String getTitulo (){
-        return titulo;
+    // ERRO CORRIGIDO 10: havia um segundo construtor que deixava "genero" e "ano"
+    // sempre nulos. Como esses campos são obrigatórios pelo mini mundo (toda Obra
+    // precisa de Título, Gênero, Ano, Autor e Status), esse construtor permitia
+    // criar uma Obra em estado inválido — e ao tentar persistir essa Obra, o
+    // br.edu.ufersa.LibreFox.editora.DAO.ObraDAO.inserir() sofreria NullPointerException ao converter Short -> short.
+    // Removido por não ser usado em nenhum lugar do código e por violar a regra
+    // de negócio. Use sempre o construtor completo abaixo.
+    public Obra(String titulo, String genero, Short ano, Short status, Autor autor, String id) {
+        setTitulo(titulo);
+        setGenero(genero);
+        setAno(ano);
+        setStatus(status);
+        setAutor(autor);
+        setId(id);
+        this.dataSubmissao = LocalDate.now();
     }
 
-    public void setGenero (String genero){
-        if (this.genero!= null) {
-            this.genero = genero; }
+    // -------------------------------------------------------------------------
+    // GETTERS E SETTERS
+    // -------------------------------------------------------------------------
+
+    public String getId() { return id; }
+    public void setId(String id) {
+        if (id != null) this.id = id;
     }
 
-    public String getGenero (){
-        return genero;
+    public String getTitulo() { return titulo; }
+    public void setTitulo(String titulo) {
+        if (titulo != null) this.titulo = titulo;
     }
 
-    public void setAno (Short ano){
-        if (this.ano!= null) {
-            this.ano = ano; }
-    }   
+    public String getGenero() { return genero; }
+    public void setGenero(String genero) {
+        if (genero != null) this.genero = genero;
+    }
 
-    public Short getAno (){
-        return ano;
-    }   
+    public Short getAno() { return ano; }
+    public void setAno(Short ano) {
+        if (ano != null) this.ano = ano;
+    }
 
-    public void setStatus (Short status){
-        if (this.status!= null) {
-            this.status = status; }
-    }   
+    public Short getStatus() { return status; }
+    public void setStatus(Short status) {
+        if (status != null) this.status = status;
+    }
 
-    public Short getStatus (){
-        return status;
-    } 
-    
-    public void setAutor (Autor autor){
-        if (this.autor!= null) {
-            this.autor = autor; }
-    }   
+    public Autor getAutor() { return autor; }
+    public void setAutor(Autor autor) {
+        if (autor != null) this.autor = autor;
+    }
 
-    public Autor getAutor (){
-        return autor;
-    }   
-
-    public void setAvaliador (Avaliador avaliador){ 
+    public Avaliador getAvaliador() { return avaliador; }
+    public void setAvaliador(Avaliador avaliador) {
         this.avaliador = avaliador;
-    }
-    public void setId (String id){
-        if (this.id!= null) {
-            this.id = id; }
-    }
-    
-    public String getId(){
-        return id;
+        if (avaliador != null) {
+            avaliador.getObrasParaAvaliar().add(this);
+        }
     }
 
-    public void setAvaliador (Obra obra, Avaliador avaliador, Editora editora, Gerente gerente){
-         if (editora.getGerenteCpf().equals(gerente.getCpf())) {
-            obra.setAvaliador(avaliador);
-            avaliador.ObrasparaAvaliar.add(obra);
-        }
+    public LocalDate getDataSubmissao() { return dataSubmissao; }
+    public void setDataSubmissao(LocalDate dataSubmissao) {
+        if (dataSubmissao != null) this.dataSubmissao = dataSubmissao;
+    }
+
+    public LocalDate getDataAvaliacao() { return dataAvaliacao; }
+    public void setDataAvaliacao(LocalDate dataAvaliacao) {
+        if (dataAvaliacao != null) this.dataAvaliacao = dataAvaliacao;
     }
 }

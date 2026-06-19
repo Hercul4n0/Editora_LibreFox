@@ -1,80 +1,45 @@
-package main.java.br.edu.ufersa.LibreFox.editora.entities;
+package br.edu.ufersa.LibreFox.editora.entities;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class Relatorio {
 
-    // Armazena a data inicial do período do relatório
-    private Data dataInicial;
-
-    // Armazena a data final do período do relatório
-    private Data dataFinal;
-
-    // Armazena a quantidade de obras encontradas no relatório
-    private short numDeObras;
-
-    // Armazena o avaliador responsável pelas por avaliar as obras
-    private Avaliador avaliadoPor;
-
-    // Lista que armazena as obras incluídas no relatório
+    private LocalDate dataInicial;
+    private LocalDate dataFinal;
+    private Avaliador avaliadoPor;      // null = relatório geral de todos os avaliadores
     private ArrayList<Obra> obras;
 
-    // Construtor da classe
-    public Relatorio(Data dataInicial, Data dataFinal, Avaliador avaliadoPor) {
+    public Relatorio(LocalDate dataInicial, LocalDate dataFinal, Avaliador avaliadoPor) {
         setDataInicial(dataInicial);
         setDataFinal(dataFinal);
-        setAvaliadoPor(avaliadoPor);
-
+        this.avaliadoPor = avaliadoPor; // pode ser null (relatório geral)
         this.obras = new ArrayList<>();
-        this.numDeObras = 0;
     }
 
-    // Retorna a data inicial
-    public Data getDataInicial() {
-        return dataInicial;
+    // -------------------------------------------------------------------------
+    // GETTERS E SETTERS
+    // -------------------------------------------------------------------------
+
+    public LocalDate getDataInicial() { return dataInicial; }
+    public void setDataInicial(LocalDate dataInicial) {
+        if (dataInicial != null) this.dataInicial = dataInicial;
+        else throw new IllegalArgumentException("Data inicial não pode ser nula.");
     }
 
-    // Altera a data inicial se não for nula
-    public void setDataInicial(Data dataInicial) {
-        if (dataInicial != null) {
-            this.dataInicial = dataInicial;
-        } else {
-            System.out.println("Data inicial inválida.");
-        }
+    public LocalDate getDataFinal() { return dataFinal; }
+    public void setDataFinal(LocalDate dataFinal) {
+        if (dataFinal != null) this.dataFinal = dataFinal;
+        else throw new IllegalArgumentException("Data final não pode ser nula.");
     }
 
-    // Retorna a data final
-    public Data getDataFinal() {
-        return dataFinal;
-    }
-
-    // Altera a data final se não for nula
-    public void setDataFinal(Data dataFinal) {
-        if (dataFinal != null) {
-            this.dataFinal = dataFinal;
-        } else {
-            System.out.println("Data final inválida.");
-        }
-    }
-
-    // Retorna a quantidade de obras
-    public short getNumDeObras() {
-        return numDeObras;
-    }
-
-    // Retorna o avaliador responsável
-    public Avaliador getAvaliadoPor() {
-        return avaliadoPor;
-    }
-
-    public ArrayList<Obra> getObras(){return this.obras;}
-    // Altera o avaliador responsável se não for nulo
+    public Avaliador getAvaliadoPor() { return avaliadoPor; }
     public void setAvaliadoPor(Avaliador avaliadoPor) {
-        if (avaliadoPor != null) {
-            this.avaliadoPor = avaliadoPor;
-        } else {
-            System.out.println("Avaliador inválido.");
-        }
+        this.avaliadoPor = avaliadoPor;
     }
 
+    public ArrayList<Obra> getObras() { return obras; }
+
+    // Derivado da lista — não precisa ser armazenado separadamente
+    public int getNumDeObras() { return obras.size(); }
 }
