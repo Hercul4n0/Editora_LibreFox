@@ -2,70 +2,119 @@ package br.edu.ufersa.LibreFox.editora.DAO;
 
 import br.edu.ufersa.LibreFox.editora.entities.Endereco;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EnderecoDAO {
-    private static final String insert_sql = "INSERT INTO endereco (numero, bairro, logradouro, cidade, uf) VALUES (?, ?, ?, ?, ?)";
-    private static final String select_by_id_sql = "SELECT * FROM endereco WHERE id = ?";
 
-    private Connection conexao;
+    private final Connection connection;
 
-    public EnderecoDAO(Connection conexao) {
-        this.conexao = conexao;
+    public EnderecoDAO(Connection connection) {
+        this.connection = connection;
     }
 
-    public Endereco inserir(Endereco endereco) {
-        try {
-            PreparedStatement pstmt = conexao.prepareStatement(insert_sql, Statement.RETURN_GENERATED_KEYS);
+    // -------------------------------------------------------------------------
+    // CREATE
+    // -------------------------------------------------------------------------
 
-            pstmt.setString(1, endereco.getNumero());
-            pstmt.setString(2, endereco.getBairro());
-            pstmt.setString(3, endereco.getLogradouro());
-            pstmt.setString(4, endereco.getCidade());
-            pstmt.setString(5, endereco.getUf());
+    public void salvar(Endereco endereco) throws SQLException {
+        String sql = """
+                INSERT INTO endereco (numero, bairro, logradouro, cidade, uf)
+                VALUES (?, ?, ?, ?, ?)
+                """;
 
-            pstmt.executeUpdate();
+        try (PreparedStatement stmt = connection.prepareStatement(
+                sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            ResultSet rs = pstmt.getGeneratedKeys();
-            if (rs.next()) {
-                endereco.setId(rs.getLong(1));
+            preencherStatement(stmt, endereco);
+            stmt.executeUpdate();
+
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) endereco.setId(rs.getLong(1));
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-
-        return endereco;
     }
 
-    public Endereco buscarPorId(long id) {
-        try {
-            PreparedStatement pstmt = conexao.prepareStatement(select_by_id_sql);
-            pstmt.setLong(1, id);
+    // -------------------------------------------------------------------------
+    // READ
+    // -------------------------------------------------------------------------
 
-            ResultSet rs = pstmt.executeQuery();
+    public Endereco buscarPorId(long id) throws SQLException {
+        String sql = "SELECT * FROM endereco WHERE id = ?";
 
-            if (rs.next()) {
-                Endereco endereco = new Endereco(
-                    rs.getString("numero"),
-                    rs.getString("bairro"),
-                    rs.getString("logradouro"),
-                    rs.getString("cidade"),
-                    rs.getString("uf")
-                );
-
-                endereco.setId(rs.getLong(  "id"));
-
-                return endereco;
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return mapear(rs);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-
         return null;
+    }
+
+    public List<Endereco> listarTodos() throws SQLException {
+        List<Endereco> lista = new ArrayList<>();
+        String sql = "SELECT * FROM endereco";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) lista.add(mapear(rs));
+        }
+        return lista;
+    }
+
+    // -------------------------------------------------------------------------
+    // UPDATE
+    // -------------------------------------------------------------------------
+
+    public void atualizar(Endereco endereco) throws SQLException {
+        String sql = """
+                UPDATE endereco
+                SET numero = ?, bairro = ?, logradouro = ?, cidade = ?, uf = ?
+                WHERE id = ?
+                """;
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            preencherStatement(stmt, endereco);
+            stmt.setLong(6, endereco.getId());
+            stmt.executeUpdate();
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // DELETE
+    // -------------------------------------------------------------------------
+
+    public void deletar(long id) throws SQLException {
+        String sql = "DELETE FROM endereco WHERE id = ?";
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            stmt.executeUpdate();
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // HELPERS
+    // -------------------------------------------------------------------------
+
+    private void preencherStatement(PreparedStatement stmt, Endereco e) throws SQLException {
+        stmt.setString(1, e.getNumero());
+        stmt.setString(2, e.getBairro());
+        stmt.setString(3, e.getLogradouro());
+        stmt.setString(4, e.getCidade());
+        stmt.setString(5, e.getUf());
+    }
+
+    Endereco mapear(ResultSet rs) throws SQLException {
+        Endereco e = new Endereco(
+                rs.getString("numero"),
+                rs.getString("bairro"),
+                rs.getString("logradouro"),
+                rs.getString("cidade"),
+                rs.getString("uf")
+        );
+        e.setId(rs.getLong("id"));
+        return e;
     }
 }
