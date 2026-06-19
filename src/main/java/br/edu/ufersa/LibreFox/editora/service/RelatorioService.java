@@ -1,53 +1,69 @@
-package main.java.br.edu.ufersa.LibreFox.editora.service;
+package br.edu.ufersa.LibreFox.editora.service;
 
-import main.java.br.edu.ufersa.LibreFox.editora.entities.*;
+import br.edu.ufersa.LibreFox.editora.DAO.RelatorioDAO;
+import br.edu.ufersa.LibreFox.editora.entities.Avaliador;
+import br.edu.ufersa.LibreFox.editora.entities.Relatorio;
+import br.edu.ufersa.LibreFox.editora.entities.Sessao;
 
-import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.time.LocalDate;
 
-
+/**
+ * Geração de relatórios de obras avaliadas em um período.
+ *
+ * Regra de negócio: <b>somente o gerente</b> pode gerar relatórios. O
+ * {@link RelatorioDAO} apenas consulta; a autorização e a validação do período
+ * ficam aqui.
+ */
 public class RelatorioService {
 
-    //RelatorioService service = new RelatorioService();
-    //private short numDeObras;
-    public void AdicionarObra(Relatorio relatorio, Obra obra) {
-        if (obra != null) {
-            relatorio.getObras().add(obra);
-            short numObras = relatorio.getNumDeObras();
-            numObras++;
-        } else {
-            System.out.println("Obra inválida.");
+    private final RelatorioDAO relatorioDAO;
+
+    public RelatorioService(Connection connection) {
+        this.relatorioDAO = new RelatorioDAO(connection);
+    }
+
+    /**
+     * Relatório de todas as obras avaliadas (aceitas ou rejeitadas) no período.
+     */
+    public Relatorio gerarPorPeriodo(LocalDate dataInicial, LocalDate dataFinal,
+                                     Sessao sessao) throws SQLException {
+        exigirGerente(sessao);
+        validarPeriodo(dataInicial, dataFinal);
+        return relatorioDAO.gerarPorPeriodo(dataInicial, dataFinal);
+    }
+
+    /**
+     * Relatório das obras avaliadas por um avaliador específico no período.
+     */
+    public Relatorio gerarPorPeriodoEAvaliador(LocalDate dataInicial, LocalDate dataFinal,
+                                               Avaliador avaliador, Sessao sessao) throws SQLException {
+        exigirGerente(sessao);
+        validarPeriodo(dataInicial, dataFinal);
+        if (avaliador == null) {
+            throw new IllegalArgumentException("Avaliador não pode ser nulo.");
+        }
+        return relatorioDAO.gerarPorPeriodoEAvaliador(dataInicial, dataFinal, avaliador);
+    }
+
+    // -------------------------------------------------------------------------
+    // AUTORIZAÇÃO / VALIDAÇÃO
+    // -------------------------------------------------------------------------
+
+    private void exigirGerente(Sessao sessao) {
+        if (sessao == null || !sessao.podeGerenciar()) {
+            throw new SecurityException("Apenas o gerente pode gerar relatórios.");
         }
     }
 
-    // Exibe as informações do relatório
-    public void gerarRelatorio(Relatorio relatorio) {
-        System.out.println("===== RELATÓRIO =====");
-
-        System.out.print("Período: ");
-
-        if (relatorio.getDataInicial() != null) {
-            System.out.print(relatorio.getDataInicial().getDia() + "/" +
-                    relatorio.getDataInicial().getMes() + "/" + relatorio.getDataInicial().getAno());
+    private void validarPeriodo(LocalDate dataInicial, LocalDate dataFinal) {
+        if (dataInicial == null || dataFinal == null) {
+            throw new IllegalArgumentException("Data inicial e final são obrigatórias.");
         }
-
-        System.out.print(" até ");
-
-        if (relatorio.getDataFinal() != null) {
-            System.out.println(relatorio.getDataFinal().getDia() + "/" +
-                    relatorio.getDataFinal().getMes() + "/" + relatorio.getDataFinal().getAno());
-        }
-
-        System.out.println("Número de Obras: " + relatorio.getNumDeObras());
-
-        if (relatorio.getAvaliadoPor() != null) {
-            System.out.println("Avaliado por: " + relatorio.getAvaliadoPor().getNome());
-        }
-
-        System.out.println("Obras no relatório:");
-
-        // Percorre a lista de obras e exibe seus dados
-        for (Obra obra : relatorio.getObras()) {
-            System.out.println("-------------------");
+        if (dataFinal.isBefore(dataInicial)) {
+            throw new IllegalArgumentException(
+                    "A data final não pode ser anterior à data inicial.");
         }
     }
 }
