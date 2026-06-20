@@ -1,50 +1,69 @@
-package main.java.br.edu.ufersa.LibreFox.editora.service;
-//GerenteService para GerenteDAO
-import main.java.br.edu.ufersa.LibreFox.editora.DAO.GerenteDAO;
-import main.java.br.edu.ufersa.LibreFox.editora.entities.Gerente;
+package br.edu.ufersa.LibreFox.editora.service;
+
+import br.edu.ufersa.LibreFox.editora.DAO.GerenteDAO;
+import br.edu.ufersa.LibreFox.editora.entities.Gerente;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
+/**
+ * Casos de uso ligados a Gerentes.
+ *
+ * O cadastro de gerente é uma operação de bootstrap do sistema (alguém precisa
+ * existir como gerente antes de qualquer regra "somente gerente" poder ser
+ * aplicada), portanto não exige uma {@link br.edu.ufersa.LibreFox.editora.entities.Sessao}.
+ */
 public class GerenteService {
-    private GerenteDAO gerenteDAO;
 
-    public GerenteService(GerenteDAO gerenteDAO){
-        this.gerenteDAO = gerenteDAO;
+    private final GerenteDAO gerenteDAO;
+
+    public GerenteService(Connection connection) {
+        this.gerenteDAO = new GerenteDAO(connection);
     }
 
-    public Gerente cadastrarGerente(Gerente gerente){
-        if(gerente == null){
-            System.out.println("Gerente inválido!");
-            return null;
+    // -------------------------------------------------------------------------
+    // CADASTRO / ALTERAÇÃO / EXCLUSÃO
+    // -------------------------------------------------------------------------
+
+    public Gerente cadastrar(Gerente gerente) throws SQLException {
+        if (gerente == null) {
+            throw new IllegalArgumentException("Gerente não pode ser nulo.");
         }
         return gerenteDAO.inserir(gerente);
     }
 
-    public void excluirGerente(Gerente gerente){
-        if(gerente == null){
-            System.out.println("Gerente inválido!");
-            return;
-        }
-        gerenteDAO.deletar(gerente);
-    }
-
-    public void atualizarGerente(Gerente gerente){
-        if(gerente == null){
-            System.out.println("Gerente inválido!");
-            return;
+    public void alterar(Gerente gerente) throws SQLException {
+        if (gerente == null) {
+            throw new IllegalArgumentException("Gerente não pode ser nulo.");
         }
         gerenteDAO.atualizar(gerente);
     }
 
-    public Gerente buscarGerente(String parametro){
-        if(parametro == null || parametro.isBlank()){
-            System.out.println("Parâmetro inválido!");
-            return null;
+    public void excluir(Gerente gerente) throws SQLException {
+        if (gerente == null) {
+            throw new IllegalArgumentException("Gerente não pode ser nulo.");
         }
-        return gerenteDAO.buscar(parametro);
+        gerenteDAO.deletar(gerente);
     }
 
-    public ArrayList<Gerente> listarGerente(){
+    // -------------------------------------------------------------------------
+    // BUSCAS
+    // -------------------------------------------------------------------------
+
+    public ArrayList<Gerente> listar() throws SQLException {
         return gerenteDAO.listar();
     }
 
+    public Gerente buscarPorId(long id) throws SQLException {
+        return gerenteDAO.buscarPorId(id);
+    }
+
+    public Gerente buscarPorCpf(String cpf) throws SQLException {
+        return gerenteDAO.buscarPorCpf(cpf);
+    }
+
+    public Gerente buscarPorLogin(String login) throws SQLException {
+        return gerenteDAO.buscarPorLogin(login);
+    }
 }

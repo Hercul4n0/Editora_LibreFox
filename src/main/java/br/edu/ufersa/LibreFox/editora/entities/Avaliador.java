@@ -1,17 +1,26 @@
-package main.java.br.edu.ufersa.LibreFox.editora.entities;
-import java.util.ArrayList;
+package br.edu.ufersa.LibreFox.editora.entities;
+
+import java.util.EnumSet;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
 
-public class Avaliador extends Usuario{
-    List<Obra> ObrasparaAvaliar = new ArrayList<>();
-    //Construtor
+public class Avaliador extends Usuario {
 
-    public List<Obra> getObrasparaAvaliar(){
-        return ObrasparaAvaliar;
+    private List<Obra> obrasParaAvaliar = new ArrayList<>();
+
+    public Avaliador(String nome, String cpf, Endereco endereco,
+                     String login, String senha) {
+        super(nome, cpf, endereco, login, senha, EnumSet.of(Perfil.AVALIADOR));
     }
-    public Avaliador (String nome, String cpf, String endereco, String login, String senha,
-                      boolean isAutor, boolean isAvaliador, boolean isGerente){
-        super(nome, cpf, endereco, login, senha, isAutor, isAvaliador, isGerente);
+
+    // Construtor para usuário que também é autor
+    public Avaliador(String nome, String cpf, Endereco endereco,
+                     String login, String senha, Set<Perfil> perfis) {
+        super(nome, cpf, endereco, login, senha, perfis);
     }
 
+    public List<Obra> getObrasParaAvaliar() {
+        return obrasParaAvaliar;
+    }
 }

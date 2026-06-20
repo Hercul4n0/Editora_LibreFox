@@ -1,14 +1,14 @@
 package br.edu.ufersa.LibreFox.editora.DAO;
 
+import br.edu.ufersa.LibreFox.editora.entities.Autor;
 import br.edu.ufersa.LibreFox.editora.entities.Endereco;
-import br.edu.ufersa.LibreFox.editora.entities.Gerente;
 
 import java.sql.*;
 import java.util.ArrayList;
 
-public class GerenteDAO extends UsuarioDAO<Gerente> {
+public class AutorDAO extends UsuarioDAO<Autor> {
 
-    public GerenteDAO(Connection connection) {
+    public AutorDAO(Connection connection) {
         super(connection);
     }
 
@@ -17,12 +17,12 @@ public class GerenteDAO extends UsuarioDAO<Gerente> {
     // -------------------------------------------------------------------------
 
     @Override
-    public Gerente inserir(Gerente gerente) throws SQLException {
-        enderecoDAO.salvar(gerente.getEndereco());
-        long id = inserirUsuario(gerente);
-        gerente.setId(id);
-        salvarPerfis(id, gerente.getPerfis());
-        return gerente;
+    public Autor inserir(Autor autor) throws SQLException {
+        enderecoDAO.salvar(autor.getEndereco());
+        long id = inserirUsuario(autor);
+        autor.setId(id);
+        salvarPerfis(id, autor.getPerfis());
+        return autor;
     }
 
     // -------------------------------------------------------------------------
@@ -30,14 +30,14 @@ public class GerenteDAO extends UsuarioDAO<Gerente> {
     // -------------------------------------------------------------------------
 
     @Override
-    public ArrayList<Gerente> listar() throws SQLException {
+    public ArrayList<Autor> listar() throws SQLException {
         String sql = """
                 SELECT DISTINCT u.* FROM usuario u
                 JOIN usuario_perfil up ON u.id = up.usuario_id
-                WHERE up.perfil = 'GERENTE'
+                WHERE up.perfil = 'AUTOR'
                 ORDER BY u.nome
                 """;
-        ArrayList<Gerente> lista = new ArrayList<>();
+        ArrayList<Autor> lista = new ArrayList<>();
 
         try (PreparedStatement stmt = connection.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -51,10 +51,10 @@ public class GerenteDAO extends UsuarioDAO<Gerente> {
     // -------------------------------------------------------------------------
 
     @Override
-    public void atualizar(Gerente gerente) throws SQLException {
-        enderecoDAO.atualizar(gerente.getEndereco());
-        atualizarUsuario(gerente);
-        atualizarPerfis(gerente.getId(), gerente.getPerfis());
+    public void atualizar(Autor autor) throws SQLException {
+        enderecoDAO.atualizar(autor.getEndereco());
+        atualizarUsuario(autor);
+        atualizarPerfis(autor.getId(), autor.getPerfis());
     }
 
     // -------------------------------------------------------------------------
@@ -62,21 +62,20 @@ public class GerenteDAO extends UsuarioDAO<Gerente> {
     // -------------------------------------------------------------------------
 
     @Override
-    public void deletar(Gerente gerente) throws SQLException {
-        deletarUsuario(gerente.getId());
+    public void deletar(Autor autor) throws SQLException {
+        deletarUsuario(autor.getId());
     }
 
     // -------------------------------------------------------------------------
     // BUSCAS ESPECÍFICAS
     // -------------------------------------------------------------------------
 
-    public Gerente buscarPorId(long id) throws SQLException {
+    public Autor buscarPorId(long id) throws SQLException {
         String sql = """
                 SELECT DISTINCT u.* FROM usuario u
                 JOIN usuario_perfil up ON u.id = up.usuario_id
-                WHERE u.id = ? AND up.perfil = 'GERENTE'
+                WHERE u.id = ? AND up.perfil = 'AUTOR'
                 """;
-
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setLong(1, id);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -86,13 +85,12 @@ public class GerenteDAO extends UsuarioDAO<Gerente> {
         return null;
     }
 
-    public Gerente buscarPorCpf(String cpf) throws SQLException {
+    public Autor buscarPorCpf(String cpf) throws SQLException {
         String sql = """
                 SELECT DISTINCT u.* FROM usuario u
                 JOIN usuario_perfil up ON u.id = up.usuario_id
-                WHERE u.cpf = ? AND up.perfil = 'GERENTE'
+                WHERE u.cpf = ? AND up.perfil = 'AUTOR'
                 """;
-
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, cpf);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -102,15 +100,50 @@ public class GerenteDAO extends UsuarioDAO<Gerente> {
         return null;
     }
 
-    public Gerente buscarPorLogin(String login) throws SQLException {
+    // ERRO CORRIGIDO 6: buscarPorNome declarava ArrayList<Autor> lista sem usá-la,
+    // e retornava apenas o primeiro resultado. Corrigido para retornar todos os resultados.
+    public ArrayList<Autor> buscarPorNome(String nome) throws SQLException {
         String sql = """
                 SELECT DISTINCT u.* FROM usuario u
                 JOIN usuario_perfil up ON u.id = up.usuario_id
-                WHERE u.login = ? AND up.perfil = 'GERENTE'
+                WHERE u.nome LIKE ? AND up.perfil = 'AUTOR'
+                ORDER BY u.nome
                 """;
+        ArrayList<Autor> lista = new ArrayList<>();
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, "%" + nome + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) lista.add(mapear(rs));
+            }
+        }
+        return lista;
+    }
+
+    public Autor buscarPorLogin(String login) throws SQLException {
+        String sql = """
+                SELECT DISTINCT u.* FROM usuario u
+                JOIN usuario_perfil up ON u.id = up.usuario_id
+                WHERE u.login = ? AND up.perfil = 'AUTOR'
+                """;
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, login);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return mapear(rs);
+            }
+        }
+        return null;
+    }
+
+    public Autor buscarPorObra(String obraId) throws SQLException {
+        String sql = """
+                SELECT DISTINCT u.* FROM usuario u
+                JOIN usuario_perfil up ON u.id = up.usuario_id
+                JOIN obra o ON o.autor_id = u.id
+                WHERE o.id = ? AND up.perfil = 'AUTOR'
+                """;
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, obraId);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) return mapear(rs);
             }
@@ -122,18 +155,12 @@ public class GerenteDAO extends UsuarioDAO<Gerente> {
     // MAPEAMENTO
     // -------------------------------------------------------------------------
 
-    // ERRO CORRIGIDO 9: mapear() usava o construtor de perfil único, sempre
-    // hardcoded para {GERENTE}, descartando silenciosamente qualquer outro
-    // perfil (AUTOR/AVALIADOR) que o usuário tivesse na tabela usuario_perfil.
-    // Isso também tornava o construtor multi-perfil do Gerente inútil, pois
-    // nada nunca lia de volta esses dados. Corrigido para chamar buscarPerfis,
-    // no mesmo padrão de br.edu.ufersa.LibreFox.editora.DAO.AutorDAO e br.edu.ufersa.LibreFox.editora.DAO.AvaliadorDAO.
     @Override
-    protected Gerente mapear(ResultSet rs) throws SQLException {
+    protected Autor mapear(ResultSet rs) throws SQLException {
         long id = rs.getLong("id");
         Endereco endereco = enderecoDAO.buscarPorId(rs.getLong("endereco_id"));
 
-        Gerente gerente = new Gerente(
+        Autor autor = new Autor(
                 rs.getString("nome"),
                 rs.getString("cpf"),
                 endereco,
@@ -141,7 +168,7 @@ public class GerenteDAO extends UsuarioDAO<Gerente> {
                 rs.getString("senha"),
                 buscarPerfis(id)
         );
-        gerente.setId(id);
-        return gerente;
+        autor.setId(id);
+        return autor;
     }
 }
