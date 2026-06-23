@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/20" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="br.edu.ufersa.LibreFox.Controller.GerenciarObrasController"
+      stylesheets="@style.css" styleClass="painel-principal">
+
+    <HBox spacing="0" VBox.vgrow="ALWAYS">
+
+        <!-- MENU LATERAL -->
+        <VBox styleClass="painel-lateral" spacing="8" minWidth="220" prefWidth="220">
+            <VBox spacing="4" alignment="CENTER" padding="0 0 20 0">
+                <Label text="LibreFox" styleClass="logo-texto"/>
+                <Label text="Gestão de editoras" styleClass="logo-subtexto"/>
+            </VBox>
+
+            <Label text="MENU" style="-fx-text-fill: #6c6c80; -fx-font-size: 11px; -fx-font-weight: 600; -fx-padding: 10 0 4 0;"/>
+
+            <Button text="🏠 Página principal" styleClass="btn-lateral" onAction="#navegarHome"/>
+            <Button text="👤 Gerenciar autores" styleClass="btn-lateral" onAction="#navegarAutores"/>
+            <Button text="⭐ Gerenciar avaliadores" styleClass="btn-lateral" onAction="#navegarAvaliadores"/>
+            <Button text="📚 Gerenciar obra" styleClass="btn-lateral, btn-lateral-ativo"/>
+            <Button text="📊 Relatórios" styleClass="btn-lateral" onAction="#navegarRelatorios"/>
+
+            <VBox spacing="4" VBox.vgrow="ALWAYS"/>
+
+            <Button text="🚪 Sair" styleClass="btn-sair" maxWidth="Infinity" onAction="#handleSair"/>
+        </VBox>
+
+        <!-- CONTEÚDO PRINCIPAL -->
+        <VBox spacing="16" HBox.hgrow="ALWAYS" styleClass="painel-branco"
+              padding="20 24">
+
+            <Label text="📚 Gerenciar obras" styleClass="titulo-principal"/>
+
+            <!-- FILTROS -->
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <TextField fx:id="campoBusca" promptText="Nome ou obra..." styleClass="campo-busca"
+                           maxWidth="250"/>
+                <ComboBox fx:id="cmbStatus" promptText="Status" maxWidth="150">
+                    <items>
+                        <fx:define>
+                            <String fx:value="Todos"/>
+                            <String fx:value="Em análise"/>
+                            <String fx:value="Aprovado"/>
+                            <String fx:value="Rejeitado"/>
+                        </fx:define>
+                    </items>
+                </ComboBox>
+                <ComboBox fx:id="cmbAno" promptText="Ano" maxWidth="120">
+                    <items>
+                        <fx:define>
+                            <String fx:value="Todos"/>
+                            <String fx:value="2024"/>
+                            <String fx:value="2025"/>
+                            <String fx:value="2026"/>
+                        </fx:define>
+                    </items>
+                </ComboBox>
+                <Button text="🔍 Buscar" styleClass="btn-azul-claro" onAction="#handleBuscar"/>
+                <HBox HBox.hgrow="ALWAYS"/>
+                <Button text="➕ Nova obra" styleClass="btn-primario" onAction="#handleNovaObra"/>
+            </HBox>
+
+            <TableView fx:id="tblObras" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colTitulo" text="Título" prefWidth="200"/>
+                    <TableColumn fx:id="colAutor" text="Autor" prefWidth="150"/>
+                    <TableColumn fx:id="colGenero" text="Gênero" prefWidth="120"/>
+                    <TableColumn fx:id="colStatus" text="Status" prefWidth="120"/>
+                    <TableColumn fx:id="colAno" text="Ano" prefWidth="80"/>
+                    <TableColumn fx:id="colAvaliador" text="Avaliador" prefWidth="150"/>
+                    <TableColumn fx:id="colAcoes" text="Ações" prefWidth="120"/>
+                </columns>
+            </TableView>
+
+            <Label text="Isso é tudo por enquanto ..." style="-fx-text-fill: #6c757d; -fx-font-size: 13px;"/>
+        </VBox>
+    </HBox>
+</VBox>

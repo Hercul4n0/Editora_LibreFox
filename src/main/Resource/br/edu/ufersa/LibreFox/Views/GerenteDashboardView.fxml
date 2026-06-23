@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Priority?>
+
+<VBox xmlns="http://javafx.com/javafx/20" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="br.edu.ufersa.LibreFox.Controller.GerenteDashboardController"
+      stylesheets="@style.css" styleClass="painel-principal">
+
+    <HBox spacing="0" VBox.vgrow="ALWAYS">
+
+        <!-- MENU LATERAL -->
+        <VBox styleClass="painel-lateral" spacing="8" minWidth="220" prefWidth="220">
+            <VBox spacing="4" alignment="CENTER" padding="0 0 20 0">
+                <Label text="LibreFox" styleClass="logo-texto"/>
+                <Label text="Gestão de editoras" styleClass="logo-subtexto"/>
+            </VBox>
+
+            <Label text="MENU" style="-fx-text-fill: #6c6c80; -fx-font-size: 11px; -fx-font-weight: 600; -fx-padding: 10 0 4 0;"/>
+
+            <Button fx:id="btnHome" text="🏠 Página principal" styleClass="btn-lateral, btn-lateral-ativo"
+                    onAction="#navegarHome"/>
+            <Button fx:id="btnAutores" text="👤 Gerenciar autores" styleClass="btn-lateral"
+                    onAction="#navegarAutores"/>
+            <Button fx:id="btnAvaliadores" text="⭐ Gerenciar avaliadores" styleClass="btn-lateral"
+                    onAction="#navegarAvaliadores"/>
+            <Button fx:id="btnObras" text="📚 Gerenciar obra" styleClass="btn-lateral"
+                    onAction="#navegarObras"/>
+            <Button fx:id="btnRelatorios" text="📊 Relatórios" styleClass="btn-lateral"
+                    onAction="#navegarRelatorios"/>
+
+            <VBox spacing="4" VBox.vgrow="ALWAYS"/>
+
+            <Button fx:id="btnSair" text="🚪 Sair" styleClass="btn-sair" maxWidth="Infinity"
+                    onAction="#handleSair"/>
+        </VBox>
+
+        <!-- CONTEÚDO PRINCIPAL -->
+        <VBox spacing="16" HBox.hgrow="ALWAYS" styleClass="painel-branco"
+              padding="20 24">
+
+            <!-- CABEÇALHO -->
+            <HBox alignment="CENTER_LEFT" spacing="16">
+                <VBox>
+                    <Label styleClass="label-saudacao" text="Olá, João Carlos!"/>
+                    <Label styleClass="label-descricao" text="Aqui está o resumo da sua editora"/>
+                </VBox>
+                <HBox HBox.hgrow="ALWAYS"/>
+                <Label style="-fx-text-fill: #6c757d; -fx-font-size: 13px; -fx-padding: 8 16 0 0;">
+                    <fx:attribute name="text" value="🔔 Notificações"/>
+                </Label>
+            </HBox>
+
+            <!-- CARDS DE RESUMO -->
+            <HBox spacing="16" alignment="CENTER">
+                <VBox styleClass="card-resumo" HBox.hgrow="ALWAYS">
+                    <Label text="Obras em avaliação" styleClass="label-rotulo"/>
+                    <Label fx:id="lblEmAvaliacao" text="0" styleClass="label-valor"/>
+                </VBox>
+                <VBox styleClass="card-resumo" HBox.hgrow="ALWAYS">
+                    <Label text="Obras aceitas" styleClass="label-rotulo"/>
+                    <Label fx:id="lblAceitas" text="0" styleClass="label-valor"/>
+                </VBox>
+                <VBox styleClass="card-resumo" HBox.hgrow="ALWAYS">
+                    <Label text="Obras rejeitadas" styleClass="label-rotulo"/>
+                    <Label fx:id="lblRejeitadas" text="0" styleClass="label-valor"/>
+                </VBox>
+                <VBox styleClass="card-resumo" HBox.hgrow="ALWAYS">
+                    <Label text="Obras sem avaliador" styleClass="label-rotulo"/>
+                    <Label fx:id="lblSemAvaliador" text="0" styleClass="label-valor"/>
+                </VBox>
+            </HBox>
+
+            <!-- AVALIAÇÕES PENDENTES -->
+            <VBox spacing="8">
+                <HBox alignment="CENTER_LEFT" spacing="8">
+                    <Label text="📋 Avaliações pendentes" styleClass="titulo-subsecao"/>
+                </HBox>
+                <VBox spacing="4" styleClass="painel-cinza" maxHeight="150">
+                    <Label fx:id="lblPendencia1" text="A casa que respirava cinzas - Beatriz Guimarães"
+                           style="-fx-padding: 6 12; -fx-font-size: 13px; -fx-border-color: #e8e8e8; -fx-border-width: 0 0 1 0;"/>
+                    <Label fx:id="lblPendencia2" text="O peso de um Quase - Acsa Nogueira"
+                           style="-fx-padding: 6 12; -fx-font-size: 13px; -fx-border-color: #e8e8e8; -fx-border-width: 0 0 1 0;"/>
+                    <Label fx:id="lblPendencia3" text="Nenhuma pendência"
+                           style="-fx-padding: 6 12; -fx-font-size: 13px; -fx-text-fill: #6c757d;"/>
+                </VBox>
+            </VBox>
+
+            <!-- ÚLTIMAS OBRAS -->
+            <VBox spacing="8" VBox.vgrow="ALWAYS">
+                <Label text="📚 Últimas obras cadastradas" styleClass="titulo-subsecao"/>
+
+                <TableView fx:id="tblObras" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colTitulo" text="Obra" prefWidth="250"/>
+                        <TableColumn fx:id="colAutor" text="Autor" prefWidth="150"/>
+                        <TableColumn fx:id="colStatus" text="Status" prefWidth="120"/>
+                        <TableColumn fx:id="colAcoes" text="Ações" prefWidth="150"/>
+                    </columns>
+                </TableView>
+            </VBox>
+        </VBox>
+    </HBox>
+</VBox>
