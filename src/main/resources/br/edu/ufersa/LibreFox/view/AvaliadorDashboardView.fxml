@@ -10,14 +10,17 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox xmlns="http://javafx.com/javafx/20" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="br.edu.ufersa.LibreFox.Controller.AvaliadorDashboardController"
+      fx:controller="br.edu.ufersa.LibreFox.Controllers.AvaliadorDashboardController"
       stylesheets="@style.css" styleClass="painel-principal">
 
     <HBox spacing="0" VBox.vgrow="ALWAYS">
 
         <!-- MENU LATERAL -->
         <VBox styleClass="painel-lateral" spacing="8" minWidth="200" prefWidth="200">
-            <VBox spacing="4" alignment="CENTER" padding="0 0 20 0">
+            <VBox spacing="4" alignment="CENTER">
+                <padding>
+                    <Insets top="0" right="0" bottom="20" left="0"/>
+                </padding>
                 <Label text="LibreFox" styleClass="logo-texto"/>
                 <Label text="Gestão de editoras" styleClass="logo-subtexto"/>
             </VBox>
@@ -36,8 +39,10 @@
         </VBox>
 
         <!-- CONTEÚDO PRINCIPAL -->
-        <VBox spacing="16" HBox.hgrow="ALWAYS" styleClass="painel-branco"
-              padding="20 24">
+        <VBox spacing="16" HBox.hgrow="ALWAYS" styleClass="painel-branco">
+            <padding>
+                <Insets top="20" right="24" bottom="20" left="24"/>
+            </padding>
 
             <!-- CABEÇALHO -->
             <HBox alignment="CENTER_LEFT" spacing="16">

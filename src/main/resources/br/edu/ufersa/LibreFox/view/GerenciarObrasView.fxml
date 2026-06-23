@@ -11,14 +11,17 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox xmlns="http://javafx.com/javafx/20" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="br.edu.ufersa.LibreFox.Controller.GerenciarObrasController"
+      fx:controller="br.edu.ufersa.LibreFox.Controllers.GerenciarObrasController"
       stylesheets="@style.css" styleClass="painel-principal">
 
     <HBox spacing="0" VBox.vgrow="ALWAYS">
 
         <!-- MENU LATERAL -->
         <VBox styleClass="painel-lateral" spacing="8" minWidth="220" prefWidth="220">
-            <VBox spacing="4" alignment="CENTER" padding="0 0 20 0">
+            <VBox spacing="4" alignment="CENTER">
+                <padding>
+                    <Insets top="0" right="0" bottom="20" left="0"/>
+                </padding>
                 <Label text="LibreFox" styleClass="logo-texto"/>
                 <Label text="Gestão de editoras" styleClass="logo-subtexto"/>
             </VBox>
@@ -37,8 +40,10 @@
         </VBox>
 
         <!-- CONTEÚDO PRINCIPAL -->
-        <VBox spacing="16" HBox.hgrow="ALWAYS" styleClass="painel-branco"
-              padding="20 24">
+        <VBox spacing="16" HBox.hgrow="ALWAYS" styleClass="painel-branco">
+            <padding>
+                <Insets top="20" right="24" bottom="20" left="24"/>
+            </padding>
 
             <Label text="📚 Gerenciar obras" styleClass="titulo-principal"/>
 
@@ -46,26 +51,9 @@
             <HBox spacing="12" alignment="CENTER_LEFT">
                 <TextField fx:id="campoBusca" promptText="Nome ou obra..." styleClass="campo-busca"
                            maxWidth="250"/>
-                <ComboBox fx:id="cmbStatus" promptText="Status" maxWidth="150">
-                    <items>
-                        <fx:define>
-                            <String fx:value="Todos"/>
-                            <String fx:value="Em análise"/>
-                            <String fx:value="Aprovado"/>
-                            <String fx:value="Rejeitado"/>
-                        </fx:define>
-                    </items>
-                </ComboBox>
-                <ComboBox fx:id="cmbAno" promptText="Ano" maxWidth="120">
-                    <items>
-                        <fx:define>
-                            <String fx:value="Todos"/>
-                            <String fx:value="2024"/>
-                            <String fx:value="2025"/>
-                            <String fx:value="2026"/>
-                        </fx:define>
-                    </items>
-                </ComboBox>
+                <!-- Os itens dos combos são preenchidos em GerenciarObrasController.carregarDados() -->
+                <ComboBox fx:id="cmbStatus" promptText="Status" maxWidth="150"/>
+                <ComboBox fx:id="cmbAno" promptText="Ano" maxWidth="120"/>
                 <Button text="🔍 Buscar" styleClass="btn-azul-claro" onAction="#handleBuscar"/>
                 <HBox HBox.hgrow="ALWAYS"/>
                 <Button text="➕ Nova obra" styleClass="btn-primario" onAction="#handleNovaObra"/>

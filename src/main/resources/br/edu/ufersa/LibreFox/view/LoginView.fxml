@@ -12,8 +12,8 @@
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Text?>
 
-<StackPane xmlns="http://javafx.com/javafx/20" xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="br.edu.ufersa.LibreFox.Controller.LoginController"
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="br.edu.ufersa.LibreFox.Controllers.LoginController"
            stylesheets="@style.css">
 
     <VBox alignment="CENTER" styleClass="painel-login" spacing="0">
@@ -40,8 +40,10 @@
 
             <!-- LADO DIREITO - FORMULÁRIO DE LOGIN -->
             <VBox alignment="CENTER" spacing="24" styleClass="painel-login-direito"
-                  HBox.hgrow="ALWAYS" minWidth="400" prefWidth="500"
-                  padding="48 40">
+                  HBox.hgrow="ALWAYS" minWidth="400" prefWidth="500">
+                <padding>
+                    <Insets top="48" right="40" bottom="48" left="40"/>
+                </padding>
 
                 <VBox alignment="CENTER" spacing="4">
                     <Label text="Bem-vindo de volta" styleClass="label-descricao"/>
