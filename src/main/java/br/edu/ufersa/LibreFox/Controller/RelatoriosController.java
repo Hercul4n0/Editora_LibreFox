@@ -1,7 +1,6 @@
-package br.edu.ufersa.LibreFox.Controllers;
+package br.edu.ufersa.LibreFox.Controller;
 
 import br.edu.ufersa.LibreFox.Model.DAO.AvaliadorDAO;
-import br.edu.ufersa.LibreFox.Model.DAO.ObraDAO;
 import br.edu.ufersa.LibreFox.Model.DAO.RelatorioDAO;
 import br.edu.ufersa.LibreFox.Model.entities.Avaliador;
 import br.edu.ufersa.LibreFox.Model.entities.Obra;

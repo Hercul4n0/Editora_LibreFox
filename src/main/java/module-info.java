@@ -6,8 +6,8 @@ module Editora.LibreFox {
     exports br.edu.ufersa.LibreFox;
     opens br.edu.ufersa.LibreFox to javafx.fxml, javafx.graphics;
 
-    exports br.edu.ufersa.LibreFox.Controllers;
-    opens br.edu.ufersa.LibreFox.Controllers to javafx.fxml;
+    exports br.edu.ufersa.LibreFox.Controller;
+    opens br.edu.ufersa.LibreFox.Controller to javafx.fxml;
 
     exports br.edu.ufersa.LibreFox.Model.entities;
     opens br.edu.ufersa.LibreFox.Model.entities to javafx.fxml;

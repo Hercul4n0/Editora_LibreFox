@@ -3,6 +3,7 @@ package br.edu.ufersa.LibreFox.Model.service;
 import br.edu.ufersa.LibreFox.Model.DAO.AvaliadorDAO;
 import br.edu.ufersa.LibreFox.Model.entities.Avaliador;
 import br.edu.ufersa.LibreFox.Model.entities.Sessao;
+import br.edu.ufersa.LibreFox.Model.exceptions.AcessoNegadoException;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -27,7 +28,7 @@ public class AvaliadorService {
     // CADASTRO / ALTERAÇÃO / EXCLUSÃO — restritos ao gerente
     // -------------------------------------------------------------------------
 
-    public Avaliador cadastrar(Avaliador avaliador, Sessao sessao) throws SQLException {
+    public Avaliador cadastrar(Avaliador avaliador, Sessao sessao) throws SQLException, AcessoNegadoException {
         if (avaliador == null) {
             throw new IllegalArgumentException("Avaliador não pode ser nulo.");
         }
@@ -35,7 +36,7 @@ public class AvaliadorService {
         return avaliadorDAO.inserir(avaliador);
     }
 
-    public void alterar(Avaliador avaliador, Sessao sessao) throws SQLException {
+    public void alterar(Avaliador avaliador, Sessao sessao) throws SQLException, AcessoNegadoException {
         if (avaliador == null) {
             throw new IllegalArgumentException("Avaliador não pode ser nulo.");
         }
@@ -43,7 +44,7 @@ public class AvaliadorService {
         avaliadorDAO.atualizar(avaliador);
     }
 
-    public void excluir(Avaliador avaliador, Sessao sessao) throws SQLException {
+    public void excluir(Avaliador avaliador, Sessao sessao) throws SQLException, AcessoNegadoException {
         if (avaliador == null) {
             throw new IllegalArgumentException("Avaliador não pode ser nulo.");
         }
@@ -89,9 +90,9 @@ public class AvaliadorService {
     // AUTORIZAÇÃO
     // -------------------------------------------------------------------------
 
-    private void exigirGerente(Sessao sessao, String acao) {
+    private void exigirGerente(Sessao sessao, String acao) throws AcessoNegadoException {
         if (sessao == null || !sessao.podeGerenciar()) {
-            throw new SecurityException("Apenas o gerente pode " + acao + ".");
+            throw new AcessoNegadoException("Apenas o gerente pode " + acao + ".");
         }
     }
 }

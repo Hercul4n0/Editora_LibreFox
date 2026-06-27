@@ -45,6 +45,11 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+        </resources>
         <plugins>
 
             <!-- Compilador Java -->
@@ -66,7 +71,7 @@
                 <version>0.0.8</version>
 
                 <configuration>
-                    <mainClass>org.example.Main</mainClass>
+                    <mainClass>br.edu.ufersa.LibreFox.TesteJavaFX</mainClass>
                 </configuration>
             </plugin>
 

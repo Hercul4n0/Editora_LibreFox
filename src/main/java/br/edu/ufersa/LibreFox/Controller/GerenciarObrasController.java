@@ -1,12 +1,12 @@
-package br.edu.ufersa.LibreFox.Controllers;
+package br.edu.ufersa.LibreFox.Controller;
 
-import br.edu.ufersa.LibreFox.Model.DAO.AutorDAO;
 import br.edu.ufersa.LibreFox.Model.DAO.AvaliadorDAO;
 import br.edu.ufersa.LibreFox.Model.DAO.ObraDAO;
-import br.edu.ufersa.LibreFox.Model.entities.Autor;
 import br.edu.ufersa.LibreFox.Model.entities.Avaliador;
 import br.edu.ufersa.LibreFox.Model.entities.Obra;
 import br.edu.ufersa.LibreFox.Model.entities.Sessao;
+import br.edu.ufersa.LibreFox.Model.exceptions.AcessoNegadoException;
+import br.edu.ufersa.LibreFox.Model.service.ObraService;
 import br.edu.ufersa.LibreFox.util.Conexao;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -26,7 +26,20 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Tela "Gerenciar obras" — uso exclusivo do Gerente.
+ *
+ * Importante: o status da obra (Em análise / Aprovado / Rejeitado) NÃO é
+ * editável livremente aqui. A regra de negócio d) do enunciado diz que
+ * "somente o avaliador designado pode avaliar a obra" — então a transição
+ * de status só acontece pelo fluxo de avaliação (AvaliadorDashboard),
+ * nunca por uma edição direta do gerente.
+ */
 public class GerenciarObrasController implements DashboardController {
+
+    private static final String CSS_PATH = "/CSS/style.css";
+    private static final String VIEWS_DIR = "/Views/";
+    private static final String VIEW_LOGIN = VIEWS_DIR + "LoginView.fxml";
 
     @FXML private TextField campoBusca;
     @FXML private ComboBox<String> cmbStatus;
@@ -41,7 +54,7 @@ public class GerenciarObrasController implements DashboardController {
     @FXML private TableColumn<Obra, String> colAcoes;
 
     private Sessao sessao;
-    private ObservableList<Obra> obrasList = FXCollections.observableArrayList();
+    private final ObservableList<Obra> obrasList = FXCollections.observableArrayList();
 
     @Override
     public void setSessao(Sessao sessao) {
@@ -127,9 +140,9 @@ public class GerenciarObrasController implements DashboardController {
         });
 
         colAcoes.setCellFactory(col -> new TableCell<>() {
-            private final Button btnDesignar = new Button("👤 Designar");
-            private final Button btnEditar = new Button("✏️ Editar");
-            private final Button btnExcluir = new Button("🗑️ Excluir");
+            private final Button btnDesignar = new Button("👤");
+            private final Button btnEditar = new Button("✏️");
+            private final Button btnExcluir = new Button("🗑️");
 
             {
                 btnDesignar.getStyleClass().addAll("btn-acao", "btn-acao-azul");
@@ -166,7 +179,8 @@ public class GerenciarObrasController implements DashboardController {
                     box.getChildren().add(btnDesignar);
                 }
 
-                // Editar: aparece para obras em análise
+                // Editar: aparece para obras em análise (apenas dados descritivos —
+                // o status é alterado exclusivamente pelo fluxo de avaliação)
                 if (obra.getStatus() == 0) {
                     box.getChildren().add(btnEditar);
                 }
@@ -222,7 +236,6 @@ public class GerenciarObrasController implements DashboardController {
             dialog.getDialogPane().setContent(cmbAvaliador);
             dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
 
-            // Converter o resultado
             dialog.setResultConverter(button -> {
                 if (button == ButtonType.OK) {
                     return cmbAvaliador.getSelectionModel().getSelectedItem();
@@ -233,15 +246,19 @@ public class GerenciarObrasController implements DashboardController {
             dialog.showAndWait().ifPresent(avaliador -> {
                 if (avaliador != null) {
                     try (Connection conn2 = Conexao.getConnection()) {
-                        ObraDAO obraDAO = new ObraDAO(conn2);
-                        obraDAO.definirAvaliador(obra, avaliador);
-                        obra.setAvaliador(avaliador);
+                        // Regra f): somente o gerente pode designar avaliadores —
+                        // verificação garantida dentro do ObraService.
+                        new ObraService(conn2).designarAvaliador(obra, avaliador, sessao);
                         tblObras.refresh();
                         mostrarAlertaInfo("Sucesso",
                                 "Avaliador " + avaliador.getNome() + " designado com sucesso!");
                     } catch (SQLException e) {
                         e.printStackTrace();
                         mostrarAlerta("Erro", "Erro ao designar avaliador: " + e.getMessage());
+                    } catch (AcessoNegadoException e) {
+                        mostrarAlerta("Acesso negado", e.getMessage());
+                    } catch (IllegalStateException e) {
+                        mostrarAlerta("Aviso", e.getMessage());
                     }
                 }
             });
@@ -271,16 +288,6 @@ public class GerenciarObrasController implements DashboardController {
         }
         cmbAnoEdit.setValue(String.valueOf(obra.getAno()));
 
-        // Status
-        ComboBox<String> cmbStatusEdit = new ComboBox<>();
-        cmbStatusEdit.getItems().addAll("Em análise", "Aprovado", "Rejeitado");
-        cmbStatusEdit.setValue(switch (obra.getStatus()) {
-            case 0 -> "Em análise";
-            case 1 -> "Aprovado";
-            case 2 -> "Rejeitado";
-            default -> "Em análise";
-        });
-
         grid.add(new Label("Título:"), 0, 0);
         grid.add(campoTitulo, 1, 0);
         grid.add(new Label("Gênero:"), 0, 1);
@@ -288,7 +295,7 @@ public class GerenciarObrasController implements DashboardController {
         grid.add(new Label("Ano:"), 0, 2);
         grid.add(cmbAnoEdit, 1, 2);
         grid.add(new Label("Status:"), 0, 3);
-        grid.add(cmbStatusEdit, 1, 3);
+        grid.add(new Label("Em análise (alterado apenas pela avaliação do avaliador designado)"), 1, 3);
 
         dialog.getDialogPane().setContent(grid);
 
@@ -298,21 +305,18 @@ public class GerenciarObrasController implements DashboardController {
                     obra.setTitulo(campoTitulo.getText().trim());
                     obra.setGenero(campoGenero.getText().trim());
                     obra.setAno(Short.parseShort(cmbAnoEdit.getValue()));
+                    // Status NÃO é alterado aqui — somente via ObraService.avaliar(),
+                    // chamado pelo avaliador designado.
 
-                    short novoStatus = switch (cmbStatusEdit.getValue()) {
-                        case "Aprovado" -> 1;
-                        case "Rejeitado" -> 2;
-                        default -> 0;
-                    };
-                    obra.setStatus(novoStatus);
-
-                    new ObraDAO(conn).atualizar(obra);
+                    new ObraService(conn).alterar(obra, sessao);
                     carregarDados();
                     mostrarAlertaInfo("Sucesso", "Obra atualizada com sucesso!");
 
                 } catch (SQLException e) {
                     e.printStackTrace();
                     mostrarAlerta("Erro", "Erro ao atualizar: " + e.getMessage());
+                } catch (AcessoNegadoException e) {
+                    mostrarAlerta("Acesso negado", e.getMessage());
                 } catch (NumberFormatException e) {
                     mostrarAlerta("Erro", "Ano inválido!");
                 }
@@ -329,12 +333,14 @@ public class GerenciarObrasController implements DashboardController {
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 try (Connection conn = Conexao.getConnection()) {
-                    new ObraDAO(conn).deletar(obra);
+                    new ObraService(conn).excluir(obra, sessao);
                     obrasList.remove(obra);
                     mostrarAlertaInfo("Sucesso", "Obra excluída com sucesso!");
                 } catch (SQLException e) {
                     e.printStackTrace();
                     mostrarAlerta("Erro", "Erro ao excluir: " + e.getMessage());
+                } catch (AcessoNegadoException e) {
+                    mostrarAlerta("Acesso negado", e.getMessage());
                 }
             }
         });
@@ -401,11 +407,11 @@ public class GerenciarObrasController implements DashboardController {
     @FXML
     private void handleSair() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/br/edu/ufersa/LibreFox/view/LoginView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(VIEW_LOGIN));
             Parent root = loader.load();
             Stage stage = (Stage) tblObras.getScene().getWindow();
-            Scene scene = new Scene(root);
-            scene.getStylesheets().add(getClass().getResource("/br/edu/ufersa/LibreFox/view/style.css").toExternalForm());
+            Scene scene = new Scene(root, 1200, 800);
+            scene.getStylesheets().add(getClass().getResource(CSS_PATH).toExternalForm());
             stage.setScene(scene);
             stage.setMaximized(false);
             stage.show();
@@ -416,16 +422,17 @@ public class GerenciarObrasController implements DashboardController {
 
     private void navegarPara(String fxml) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/br/edu/ufersa/LibreFox/view/" + fxml));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(VIEWS_DIR + fxml));
             Parent root = loader.load();
             Object controller = loader.getController();
             if (controller instanceof DashboardController) {
                 ((DashboardController) controller).setSessao(sessao);
             }
             Stage stage = (Stage) tblObras.getScene().getWindow();
-            Scene scene = new Scene(root);
-            scene.getStylesheets().add(getClass().getResource("/br/edu/ufersa/LibreFox/view/style.css").toExternalForm());
+            Scene scene = new Scene(root, 1200, 800);
+            scene.getStylesheets().add(getClass().getResource(CSS_PATH).toExternalForm());
             stage.setScene(scene);
+            stage.setMaximized(true);
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();

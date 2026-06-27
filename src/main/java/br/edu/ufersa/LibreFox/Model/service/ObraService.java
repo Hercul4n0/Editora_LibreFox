@@ -4,6 +4,7 @@ import br.edu.ufersa.LibreFox.Model.DAO.ObraDAO;
 import br.edu.ufersa.LibreFox.Model.entities.Avaliador;
 import br.edu.ufersa.LibreFox.Model.entities.Obra;
 import br.edu.ufersa.LibreFox.Model.entities.Sessao;
+import br.edu.ufersa.LibreFox.Model.exceptions.AcessoNegadoException;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -23,6 +24,8 @@ import java.util.ArrayList;
  * </ul>
  *
  * O {@link ObraDAO} cuida apenas da persistência; toda regra de negócio mora aqui.
+ * Violações de autorização lançam {@link AcessoNegadoException}, uma exceção
+ * de domínio própria do LibreFox.
  */
 public class ObraService {
 
@@ -41,15 +44,21 @@ public class ObraService {
     // SUBMISSÃO — autor envia a própria obra
     // -------------------------------------------------------------------------
 
-    public Obra submeter(Obra obra, Sessao sessao) throws SQLException {
+    public Obra submeter(Obra obra, Sessao sessao) throws SQLException, AcessoNegadoException {
         if (obra == null) {
             throw new IllegalArgumentException("Obra não pode ser nula.");
         }
         if (sessao == null || !sessao.podeEnviarObra()) {
-            throw new SecurityException("Apenas autores podem submeter obras.");
+            throw new AcessoNegadoException("Apenas autores podem submeter obras.");
         }
         if (obra.getAutor() == null || obra.getAutor().getId() != sessao.getUsuarioId()) {
-            throw new SecurityException("Um autor só pode submeter obras em seu próprio nome.");
+            throw new AcessoNegadoException("Um autor só pode submeter obras em seu próprio nome.");
+        }
+
+        // A tabela "obra" usa chave primária String (não AUTO_INCREMENT); o
+        // identificador é gerado aqui caso o autor ainda não tenha definido um.
+        if (obra.getId() == null || obra.getId().isBlank()) {
+            obra.setId(java.util.UUID.randomUUID().toString());
         }
 
         // Toda obra entra no fluxo "em avaliação", recém-submetida.
@@ -65,12 +74,12 @@ public class ObraService {
     // ALTERAÇÃO / EXCLUSÃO — autor dono (enquanto em avaliação) ou gerente
     // -------------------------------------------------------------------------
 
-    public void alterar(Obra obra, Sessao sessao) throws SQLException {
+    public void alterar(Obra obra, Sessao sessao) throws SQLException, AcessoNegadoException {
         exigirDonoOuGerente(obra, sessao, "alterar");
         obraDAO.atualizar(obra);
     }
 
-    public void excluir(Obra obra, Sessao sessao) throws SQLException {
+    public void excluir(Obra obra, Sessao sessao) throws SQLException, AcessoNegadoException {
         exigirDonoOuGerente(obra, sessao, "excluir");
         obraDAO.deletar(obra);
     }
@@ -79,12 +88,13 @@ public class ObraService {
     // DESIGNAÇÃO DE AVALIADOR — somente o gerente
     // -------------------------------------------------------------------------
 
-    public void designarAvaliador(Obra obra, Avaliador avaliador, Sessao sessao) throws SQLException {
+    public void designarAvaliador(Obra obra, Avaliador avaliador, Sessao sessao)
+            throws SQLException, AcessoNegadoException {
         if (obra == null || avaliador == null) {
             throw new IllegalArgumentException("Obra e avaliador são obrigatórios.");
         }
         if (sessao == null || !sessao.podeGerenciar()) {
-            throw new SecurityException("Apenas o gerente pode designar avaliadores.");
+            throw new AcessoNegadoException("Apenas o gerente pode designar avaliadores.");
         }
         if (obra.getStatus() != EM_AVALIACAO) {
             throw new IllegalStateException(
@@ -99,16 +109,17 @@ public class ObraService {
     // AVALIAÇÃO — somente o avaliador designado
     // -------------------------------------------------------------------------
 
-    public void avaliar(Obra obra, short novoStatus, Sessao sessao) throws SQLException {
+    public void avaliar(Obra obra, short novoStatus, Sessao sessao)
+            throws SQLException, AcessoNegadoException {
         if (obra == null) {
             throw new IllegalArgumentException("Obra não pode ser nula.");
         }
         if (sessao == null || !sessao.podeAvaliar()) {
-            throw new SecurityException("Apenas avaliadores podem avaliar obras.");
+            throw new AcessoNegadoException("Apenas avaliadores podem avaliar obras.");
         }
         if (obra.getAvaliador() == null ||
                 obra.getAvaliador().getId() != sessao.getUsuarioId()) {
-            throw new SecurityException("Você não é o avaliador designado para esta obra.");
+            throw new AcessoNegadoException("Você não é o avaliador designado para esta obra.");
         }
         if (novoStatus != ACEITA && novoStatus != REJEITADA) {
             throw new IllegalArgumentException(
@@ -129,17 +140,17 @@ public class ObraService {
     // -------------------------------------------------------------------------
 
     /** Autor só visualiza as próprias obras. */
-    public ArrayList<Obra> listarObrasDoAutor(Sessao sessao) throws SQLException {
+    public ArrayList<Obra> listarObrasDoAutor(Sessao sessao) throws SQLException, AcessoNegadoException {
         if (sessao == null || !sessao.podeEnviarObra()) {
-            throw new SecurityException("Acesso negado: perfil ativo não é autor.");
+            throw new AcessoNegadoException("Acesso negado: perfil ativo não é autor.");
         }
         return obraDAO.buscarPorAutor(sessao.getUsuarioId());
     }
 
     /** Avaliador só visualiza as obras designadas a ele. */
-    public ArrayList<Obra> listarObrasDoAvaliador(Sessao sessao) throws SQLException {
+    public ArrayList<Obra> listarObrasDoAvaliador(Sessao sessao) throws SQLException, AcessoNegadoException {
         if (sessao == null || !sessao.podeAvaliar()) {
-            throw new SecurityException("Acesso negado: perfil ativo não é avaliador.");
+            throw new AcessoNegadoException("Acesso negado: perfil ativo não é avaliador.");
         }
         return obraDAO.buscarPorAvaliador(sessao.getUsuarioId());
     }
@@ -148,27 +159,27 @@ public class ObraService {
     // CATÁLOGO E BUSCAS GERAIS — somente o gerente (visão completa)
     // -------------------------------------------------------------------------
 
-    public ArrayList<Obra> listar(Sessao sessao) throws SQLException {
+    public ArrayList<Obra> listar(Sessao sessao) throws SQLException, AcessoNegadoException {
         exigirGerente(sessao);
         return obraDAO.listar();
     }
 
-    public ArrayList<Obra> buscarPorTitulo(String titulo, Sessao sessao) throws SQLException {
+    public ArrayList<Obra> buscarPorTitulo(String titulo, Sessao sessao) throws SQLException, AcessoNegadoException {
         exigirGerente(sessao);
         return obraDAO.buscarPorTitulo(titulo);
     }
 
-    public ArrayList<Obra> buscarPorAutor(long autorId, Sessao sessao) throws SQLException {
+    public ArrayList<Obra> buscarPorAutor(long autorId, Sessao sessao) throws SQLException, AcessoNegadoException {
         exigirGerente(sessao);
         return obraDAO.buscarPorAutor(autorId);
     }
 
-    public ArrayList<Obra> buscarPorStatus(short status, Sessao sessao) throws SQLException {
+    public ArrayList<Obra> buscarPorStatus(short status, Sessao sessao) throws SQLException, AcessoNegadoException {
         exigirGerente(sessao);
         return obraDAO.buscarPorStatus(status);
     }
 
-    public ArrayList<Obra> buscarPorAno(short ano, Sessao sessao) throws SQLException {
+    public ArrayList<Obra> buscarPorAno(short ano, Sessao sessao) throws SQLException, AcessoNegadoException {
         exigirGerente(sessao);
         return obraDAO.buscarPorAno(ano);
     }
@@ -185,13 +196,13 @@ public class ObraService {
     // AUTORIZAÇÃO
     // -------------------------------------------------------------------------
 
-    private void exigirGerente(Sessao sessao) {
+    private void exigirGerente(Sessao sessao) throws AcessoNegadoException {
         if (sessao == null || !sessao.podeGerenciar()) {
-            throw new SecurityException("Apenas o gerente pode consultar o catálogo completo de obras.");
+            throw new AcessoNegadoException("Apenas o gerente pode consultar o catálogo completo de obras.");
         }
     }
 
-    private void exigirDonoOuGerente(Obra obra, Sessao sessao, String acao) {
+    private void exigirDonoOuGerente(Obra obra, Sessao sessao, String acao) throws AcessoNegadoException {
         if (obra == null) {
             throw new IllegalArgumentException("Obra não pode ser nula.");
         }
@@ -202,7 +213,7 @@ public class ObraService {
                 && obra.getAutor() != null
                 && obra.getAutor().getId() == sessao.getUsuarioId();
         if (!autorDono) {
-            throw new SecurityException(
+            throw new AcessoNegadoException(
                     "Apenas o gerente ou o autor dono da obra pode " + acao + "-la.");
         }
     }

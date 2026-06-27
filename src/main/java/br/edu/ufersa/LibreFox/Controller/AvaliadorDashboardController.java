@@ -1,8 +1,9 @@
-package br.edu.ufersa.LibreFox.Controllers;
+package br.edu.ufersa.LibreFox.Controller;
 
-import br.edu.ufersa.LibreFox.Model.DAO.ObraDAO;
 import br.edu.ufersa.LibreFox.Model.entities.Obra;
 import br.edu.ufersa.LibreFox.Model.entities.Sessao;
+import br.edu.ufersa.LibreFox.Model.exceptions.AcessoNegadoException;
+import br.edu.ufersa.LibreFox.Model.service.ObraService;
 import br.edu.ufersa.LibreFox.util.Conexao;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -12,6 +13,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -19,7 +21,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-public class AutorDashboardController implements DashboardController {
+public class AvaliadorDashboardController implements DashboardController {
+
+    private static final String CSS_PATH = "/CSS/style.css";
+    private static final String VIEW_LOGIN = "/Views/LoginView.fxml";
 
     @FXML private Label lblSaudacao;
     @FXML private Label lblEmAvaliacao;
@@ -30,12 +35,12 @@ public class AutorDashboardController implements DashboardController {
     @FXML private TableColumn<Obra, String> colTitulo;
     @FXML private TableColumn<Obra, String> colAno;
     @FXML private TableColumn<Obra, String> colGenero;
-    @FXML private TableColumn<Obra, String> colStatus;
+    @FXML private TableColumn<Obra, String> colAutor;
     @FXML private TableColumn<Obra, String> colFeedback;
     @FXML private TableColumn<Obra, String> colAcoes;
 
     private Sessao sessao;
-    private ObservableList<Obra> obrasList = FXCollections.observableArrayList();
+    private final ObservableList<Obra> obrasList = FXCollections.observableArrayList();
 
     @Override
     public void setSessao(Sessao sessao) {
@@ -47,8 +52,9 @@ public class AutorDashboardController implements DashboardController {
     @Override
     public void carregarDados() {
         try (Connection conn = Conexao.getConnection()) {
-            ObraDAO obraDAO = new ObraDAO(conn);
-            List<Obra> obras = obraDAO.buscarPorAutor(sessao.getUsuarioId());
+            ObraService obraService = new ObraService(conn);
+            // Regra de negócio g): o avaliador só visualiza as obras designadas a ele.
+            List<Obra> obras = obraService.listarObrasDoAvaliador(sessao);
 
             long emAvaliacao = obras.stream().filter(o -> o.getStatus() == 0).count();
             long aceitas = obras.stream().filter(o -> o.getStatus() == 1).count();
@@ -65,6 +71,8 @@ public class AutorDashboardController implements DashboardController {
         } catch (SQLException e) {
             e.printStackTrace();
             mostrarAlerta("Erro", "Erro ao carregar dados: " + e.getMessage());
+        } catch (AcessoNegadoException e) {
+            mostrarAlerta("Acesso negado", e.getMessage());
         }
     }
 
@@ -75,38 +83,8 @@ public class AutorDashboardController implements DashboardController {
                 new SimpleStringProperty(String.valueOf(cell.getValue().getAno())));
         colGenero.setCellValueFactory(cell ->
                 new SimpleStringProperty(cell.getValue().getGenero()));
-        colStatus.setCellValueFactory(cell -> {
-            short status = cell.getValue().getStatus();
-            String texto = switch (status) {
-                case 0 -> "Em análise";
-                case 1 -> "Aprovado";
-                case 2 -> "Rejeitado";
-                default -> "Desconhecido";
-            };
-            return new SimpleStringProperty(texto);
-        });
-        colStatus.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setGraphic(null);
-                    return;
-                }
-                Label label = new Label(item);
-                label.getStyleClass().add("badge-status");
-                if (item.equals("Em análise")) {
-                    label.getStyleClass().add("badge-avaliacao");
-                } else if (item.equals("Aprovado")) {
-                    label.getStyleClass().add("badge-aprovado");
-                } else if (item.equals("Rejeitado")) {
-                    label.getStyleClass().add("badge-rejeitado");
-                }
-                setGraphic(label);
-                setText(null);
-            }
-        });
+        colAutor.setCellValueFactory(cell ->
+                new SimpleStringProperty(cell.getValue().getAutor().getNome()));
         colFeedback.setCellValueFactory(cell -> {
             String feedback = "Não";
             if (cell.getValue().getStatus() == 1) {
@@ -117,12 +95,12 @@ public class AutorDashboardController implements DashboardController {
             return new SimpleStringProperty(feedback);
         });
         colAcoes.setCellFactory(col -> new TableCell<>() {
-            private final Button btnEditar = new Button("✏️");
+            private final Button btnAvaliar = new Button("📋 Avaliar");
             {
-                btnEditar.getStyleClass().add("btn-acao");
-                btnEditar.setOnAction(e -> {
+                btnAvaliar.getStyleClass().addAll("btn-acao", "btn-acao-verde");
+                btnAvaliar.setOnAction(e -> {
                     Obra obra = getTableView().getItems().get(getIndex());
-                    // TODO: Abrir tela de edição
+                    abrirDialogoAvaliacao(obra);
                 });
             }
             @Override
@@ -133,11 +111,55 @@ public class AutorDashboardController implements DashboardController {
                     return;
                 }
                 Obra obra = getTableView().getItems().get(getIndex());
-                if (obra.getStatus() == 0) {
-                    setGraphic(btnEditar);
-                } else {
-                    setGraphic(null);
-                }
+                setGraphic(obra.getStatus() == 0 ? btnAvaliar : null);
+            }
+        });
+    }
+
+    /**
+     * Abre o diálogo "Aceitar obra / Rejeitar obra" (espelha a tela do
+     * protótipo) e persiste o veredicto através do ObraService, que garante
+     * que somente o avaliador designado pode avaliar a obra.
+     */
+    private void abrirDialogoAvaliacao(Obra obra) {
+        Dialog<Short> dialog = new Dialog<>();
+        dialog.setTitle("Avaliar obra");
+        dialog.setHeaderText("Avaliar: " + obra.getTitulo());
+
+        ButtonType btAceitar = new ButtonType("Aceitar obra", ButtonBar.ButtonData.OK_DONE);
+        ButtonType btRejeitar = new ButtonType("Rejeitar obra", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(btAceitar, btRejeitar, ButtonType.CANCEL);
+
+        TextArea campoFeedback = new TextArea();
+        campoFeedback.setPromptText("Escreva um feedback curto sugerindo ajustes e correções ao autor (opcional)");
+        campoFeedback.setPrefRowCount(4);
+
+        VBox content = new VBox(10,
+                new Label("Feedback (opcional)"),
+                campoFeedback);
+        dialog.getDialogPane().setContent(content);
+
+        dialog.setResultConverter(button -> {
+            if (button == btAceitar) return ObraService.ACEITA;
+            if (button == btRejeitar) return ObraService.REJEITADA;
+            return null;
+        });
+
+        dialog.showAndWait().ifPresent(novoStatus -> {
+            try (Connection conn = Conexao.getConnection()) {
+                ObraService obraService = new ObraService(conn);
+                obraService.avaliar(obra, novoStatus, sessao);
+                carregarDados();
+                mostrarAlerta("Sucesso", novoStatus == ObraService.ACEITA
+                        ? "Obra aceita com sucesso!"
+                        : "Obra rejeitada com sucesso!");
+            } catch (SQLException e) {
+                e.printStackTrace();
+                mostrarAlerta("Erro", "Erro ao registrar avaliação: " + e.getMessage());
+            } catch (AcessoNegadoException e) {
+                mostrarAlerta("Acesso negado", e.getMessage());
+            } catch (IllegalStateException e) {
+                mostrarAlerta("Aviso", e.getMessage());
             }
         });
     }
@@ -148,25 +170,19 @@ public class AutorDashboardController implements DashboardController {
     }
 
     @FXML
-    private void navegarMinhasObras() {
-        // Já está na página de minhas obras
-    }
-
-    @FXML
-    private void handleNovaObra() {
-        // TODO: Abrir diálogo para criar nova obra
-        mostrarAlerta("Info", "Funcionalidade de criação de obra em desenvolvimento.");
+    private void navegarObrasAtribuidas() {
+        // Já está na página de obras atribuídas
     }
 
     @FXML
     private void handleSair() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/br/edu/ufersa/LibreFox/view/LoginView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(VIEW_LOGIN));
             Parent root = loader.load();
 
             Stage stage = (Stage) tblObras.getScene().getWindow();
-            Scene scene = new Scene(root);
-            scene.getStylesheets().add(getClass().getResource("/br/edu/ufersa/LibreFox/view/style.css").toExternalForm());
+            Scene scene = new Scene(root, 1200, 800);
+            scene.getStylesheets().add(getClass().getResource(CSS_PATH).toExternalForm());
             stage.setScene(scene);
             stage.setMaximized(false);
             stage.show();

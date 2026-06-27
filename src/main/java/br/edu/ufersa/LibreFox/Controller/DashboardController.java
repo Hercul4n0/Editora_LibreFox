@@ -1,4 +1,4 @@
-package br.edu.ufersa.LibreFox.Controllers;
+package br.edu.ufersa.LibreFox.Controller;
 
 import br.edu.ufersa.LibreFox.Model.entities.Sessao;
 
