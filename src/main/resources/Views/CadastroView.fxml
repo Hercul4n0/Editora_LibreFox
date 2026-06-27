@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Text?>
+
+<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="br.edu.ufersa.LibreFox.Controller.CadastroController"
+           stylesheets="@../CSS/style.css">
+
+    <VBox alignment="CENTER" styleClass="painel-login" spacing="0" prefWidth="1200" prefHeight="800">
+        <HBox alignment="CENTER" spacing="0" prefWidth="900" prefHeight="600">
+
+            <!-- LADO ESQUERDO -->
+            <VBox alignment="CENTER" spacing="20" styleClass="painel-login-esquerdo"
+                  HBox.hgrow="ALWAYS" minWidth="420" prefWidth="420" maxWidth="420">
+                <Text styleClass="logo-texto" text="LibreFox" fill="white"/>
+                <Text styleClass="logo-subtexto" text="Gestão de editoras simplificada"
+                      fill="#c8b8d8"/>
+            </VBox>
+
+            <!-- LADO DIREITO - CADASTRO -->
+            <VBox alignment="CENTER" spacing="16" styleClass="painel-login-direito"
+                  HBox.hgrow="ALWAYS" minWidth="420" prefWidth="420" maxWidth="420">
+                <padding>
+                    <Insets top="36" right="40" bottom="36" left="40"/>
+                </padding>
+
+                <VBox alignment="CENTER" spacing="4">
+                    <Label text="Crie sua conta" styleClass="titulo-login"/>
+                    <Label text="Comece a gerenciar suas obras" styleClass="label-descricao"/>
+                </VBox>
+
+                <VBox spacing="12" maxWidth="360">
+                    <!-- Nome -->
+                    <VBox spacing="3">
+                        <Label text="Nome completo" style="-fx-font-weight: bold; -fx-text-fill: #333;"/>
+                        <TextField fx:id="campoNome" promptText="Digite seu nome completo"
+                                   styleClass="campo-texto"/>
+                    </VBox>
+
+                    <!-- E-mail -->
+                    <VBox spacing="3">
+                        <Label text="E-mail" style="-fx-font-weight: bold; -fx-text-fill: #333;"/>
+                        <TextField fx:id="campoEmail" promptText="Digite seu e-mail"
+                                   styleClass="campo-texto"/>
+                    </VBox>
+
+                    <!-- Senha -->
+                    <VBox spacing="3">
+                        <Label text="Senha" style="-fx-font-weight: bold; -fx-text-fill: #333;"/>
+                        <PasswordField fx:id="campoSenha" promptText="Digite sua senha"
+                                       styleClass="campo-texto"/>
+                    </VBox>
+
+                    <!-- Tipo de conta: apenas Autor é permitido no auto-cadastro.    -->
+                    <!-- Avaliadores e Gerentes só podem ser cadastrados por um      -->
+                    <!-- Gerente já autenticado (ver GerenciarAvaliadoresView).      -->
+                    <VBox spacing="3">
+                        <Label text="Tipo de conta" style="-fx-font-weight: bold; -fx-text-fill: #333;"/>
+                        <Label text="Autor (auto-cadastro)" styleClass="label-descricao"/>
+                    </VBox>
+
+                    <Label fx:id="lblMensagem" styleClass="msg-erro" wrapText="true"/>
+
+                    <Button text="Criar conta" styleClass="btn-primario" maxWidth="Infinity"
+                            onAction="#handleCadastro"/>
+
+                    <HBox alignment="CENTER" spacing="4">
+                        <Label text="Já tem uma conta?" styleClass="label-descricao"/>
+                        <Hyperlink text="Fazer login" onAction="#handleIrLogin"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+        </HBox>
+    </VBox>
+</StackPane>
+
