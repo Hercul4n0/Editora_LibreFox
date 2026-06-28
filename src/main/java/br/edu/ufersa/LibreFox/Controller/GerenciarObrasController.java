@@ -8,6 +8,7 @@ import br.edu.ufersa.LibreFox.Model.entities.Sessao;
 import br.edu.ufersa.LibreFox.Model.exceptions.AcessoNegadoException;
 import br.edu.ufersa.LibreFox.Model.service.ObraService;
 import br.edu.ufersa.LibreFox.util.Conexao;
+import br.edu.ufersa.LibreFox.util.Icones;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -121,13 +122,18 @@ public class GerenciarObrasController implements DashboardController {
                 }
                 Label label = new Label(item);
                 label.getStyleClass().add("badge-status");
+                String icone = null;
                 if (item.equals("Em análise")) {
                     label.getStyleClass().add("badge-avaliacao");
+                    icone = "status-analise.png";
                 } else if (item.equals("Aprovado")) {
                     label.getStyleClass().add("badge-aprovado");
+                    icone = "status-aprovado.png";
                 } else if (item.equals("Rejeitado")) {
                     label.getStyleClass().add("badge-rejeitado");
+                    icone = "status-rejeitado.png";
                 }
+                if (icone != null) label.setGraphic(Icones.icone(icone, 14));
                 setGraphic(label);
                 setText(null);
             }
@@ -140,11 +146,14 @@ public class GerenciarObrasController implements DashboardController {
         });
 
         colAcoes.setCellFactory(col -> new TableCell<>() {
-            private final Button btnDesignar = new Button("👤");
-            private final Button btnEditar = new Button("✏️");
-            private final Button btnExcluir = new Button("🗑️");
+            private final Button btnDesignar = new Button();
+            private final Button btnEditar = new Button();
+            private final Button btnExcluir = new Button();
 
             {
+                btnDesignar.setGraphic(Icones.icone("designar.png", 16));
+                btnEditar.setGraphic(Icones.icone("editar.png", 16));
+                btnExcluir.setGraphic(Icones.icone("deletar-lixeira.png", 16));
                 btnDesignar.getStyleClass().addAll("btn-acao", "btn-acao-azul");
                 btnEditar.getStyleClass().addAll("btn-acao", "btn-acao-verde");
                 btnExcluir.getStyleClass().addAll("btn-acao", "btn-acao-vermelho");
@@ -392,12 +401,6 @@ public class GerenciarObrasController implements DashboardController {
         }
     }
 
-    @FXML
-    private void handleNovaObra() {
-        mostrarAlertaInfo("Info", "Funcionalidade de criação de obra em desenvolvimento.\n" +
-                "Use a tela 'Minhas obras' do Autor para criar novas obras.");
-    }
-
     // Métodos de navegação
     @FXML private void navegarHome() { navegarPara("GerenteDashboardView.fxml"); }
     @FXML private void navegarAutores() { navegarPara("GerenciarAutoresView.fxml"); }
@@ -428,12 +431,8 @@ public class GerenciarObrasController implements DashboardController {
             if (controller instanceof DashboardController) {
                 ((DashboardController) controller).setSessao(sessao);
             }
-            Stage stage = (Stage) tblObras.getScene().getWindow();
-            Scene scene = new Scene(root, 1200, 800);
-            scene.getStylesheets().add(getClass().getResource(CSS_PATH).toExternalForm());
-            stage.setScene(scene);
-            stage.setMaximized(true);
-            stage.show();
+            // Troca apenas o root da Scene atual, preservando o modo maximizado.
+            tblObras.getScene().setRoot(root);
         } catch (IOException e) {
             e.printStackTrace();
         }

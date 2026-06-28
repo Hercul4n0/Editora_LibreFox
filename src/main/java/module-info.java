@@ -1,7 +1,9 @@
 module Editora.LibreFox {
     requires javafx.controls;
     requires javafx.fxml;
+    requires javafx.graphics;
     requires java.sql;
+    requires java.desktop;
 
     exports br.edu.ufersa.LibreFox;
     opens br.edu.ufersa.LibreFox to javafx.fxml, javafx.graphics;

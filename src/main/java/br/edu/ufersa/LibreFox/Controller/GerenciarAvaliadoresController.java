@@ -7,6 +7,7 @@ import br.edu.ufersa.LibreFox.Model.entities.Endereco;
 import br.edu.ufersa.LibreFox.Model.entities.Obra;
 import br.edu.ufersa.LibreFox.Model.entities.Sessao;
 import br.edu.ufersa.LibreFox.util.Conexao;
+import br.edu.ufersa.LibreFox.util.Icones;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -80,10 +81,13 @@ public class GerenciarAvaliadoresController implements DashboardController {
                 new SimpleStringProperty(String.valueOf(cell.getValue().getObrasParaAvaliar().size())));
 
         colAcoes.setCellFactory(col -> new TableCell<>() {
-            private final Button btnEditar = new Button("✏️ Editar");
-            private final Button btnExcluir = new Button("🗑️ Excluir");
-            private final Button btnVerObras = new Button("📚 Obras");
+            private final Button btnEditar = new Button("Editar");
+            private final Button btnExcluir = new Button("Excluir");
+            private final Button btnVerObras = new Button("Obras");
             {
+                btnEditar.setGraphic(Icones.icone("editar.png", 16));
+                btnExcluir.setGraphic(Icones.icone("deletar-lixeira.png", 16));
+                btnVerObras.setGraphic(Icones.icone("obras.png", 16));
                 btnEditar.getStyleClass().addAll("btn-acao", "btn-acao-azul");
                 btnExcluir.getStyleClass().addAll("btn-acao", "btn-acao-vermelho");
                 btnVerObras.getStyleClass().addAll("btn-acao", "btn-acao-verde");
@@ -374,12 +378,8 @@ public class GerenciarAvaliadoresController implements DashboardController {
             if (controller instanceof DashboardController) {
                 ((DashboardController) controller).setSessao(sessao);
             }
-            Stage stage = (Stage) tblAvaliadores.getScene().getWindow();
-            Scene scene = new Scene(root, 1200, 800);
-            scene.getStylesheets().add(getClass().getResource("/CSS/style.css").toExternalForm());
-            stage.setScene(scene);
-            stage.setMaximized(true);
-            stage.show();
+            // Troca apenas o root da Scene atual, preservando o modo maximizado.
+            tblAvaliadores.getScene().setRoot(root);
         } catch (IOException e) {
             e.printStackTrace();
         }

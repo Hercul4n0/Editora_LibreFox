@@ -6,6 +6,8 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
@@ -30,16 +32,25 @@
 
             <Label text="MENU" styleClass="label-menu-secao"/>
 
-            <Button fx:id="btnHome" text="🏠 Página principal" styleClass="btn-lateral, btn-lateral-ativo"
-                    maxWidth="Infinity" onAction="#navegarHome"/>
-            <Button fx:id="btnMinhasObras" text="📚 Minhas obras" styleClass="btn-lateral"
-                    maxWidth="Infinity" onAction="#navegarMinhasObras"/>
+            <Button fx:id="btnHome" text="Página principal" styleClass="btn-lateral, btn-lateral-ativo"
+                    maxWidth="Infinity" onAction="#navegarHome">
+                <graphic><ImageView fitWidth="18" fitHeight="18" preserveRatio="true">
+                    <image><Image url="@../Images/home.png"/></image></ImageView></graphic>
+            </Button>
+            <Button fx:id="btnMinhasObras" text="Minhas obras" styleClass="btn-lateral"
+                    maxWidth="Infinity" onAction="#navegarMinhasObras">
+                <graphic><ImageView fitWidth="18" fitHeight="18" preserveRatio="true">
+                    <image><Image url="@../Images/obras.png"/></image></ImageView></graphic>
+            </Button>
 
             <VBox spacing="4" VBox.vgrow="ALWAYS"/>
 
             <HBox alignment="CENTER">
-                <Button fx:id="btnSair" text="🚪 Sair" styleClass="btn-sair"
-                        onAction="#handleSair"/>
+                <Button fx:id="btnSair" text="Sair" styleClass="btn-sair"
+                        onAction="#handleSair">
+                    <graphic><ImageView fitWidth="18" fitHeight="18" preserveRatio="true">
+                        <image><Image url="@../Images/sair.png"/></image></ImageView></graphic>
+                </Button>
             </HBox>
         </VBox>
 
@@ -56,7 +67,10 @@
                     <Label styleClass="label-descricao" text="Acompanhe suas obras"/>
                 </VBox>
                 <HBox HBox.hgrow="ALWAYS"/>
-                <Button text="➕ Nova obra" styleClass="btn-primario" onAction="#handleNovaObra"/>
+                <Button text="Nova obra" styleClass="btn-primario" onAction="#handleNovaObra">
+                    <graphic><ImageView fitWidth="16" fitHeight="16" preserveRatio="true">
+                        <image><Image url="@../Images/adicionar.png"/></image></ImageView></graphic>
+                </Button>
             </HBox>
 
             <!-- CARDS DE RESUMO -->

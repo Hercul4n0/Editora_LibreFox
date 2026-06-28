@@ -5,6 +5,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
@@ -29,22 +31,40 @@
 
             <Label text="MENU" styleClass="label-menu-secao"/>
 
-            <Button fx:id="btnHome" text="🏠 Página principal" styleClass="btn-lateral, btn-lateral-ativo"
-                    maxWidth="Infinity" onAction="#navegarHome"/>
-            <Button fx:id="btnAutores" text="👤 Gerenciar autores" styleClass="btn-lateral"
-                    maxWidth="Infinity" onAction="#navegarAutores"/>
-            <Button fx:id="btnAvaliadores" text="⭐ Gerenciar avaliadores" styleClass="btn-lateral"
-                    maxWidth="Infinity" onAction="#navegarAvaliadores"/>
-            <Button fx:id="btnObras" text="📚 Gerenciar obra" styleClass="btn-lateral"
-                    maxWidth="Infinity" onAction="#navegarObras"/>
-            <Button fx:id="btnRelatorios" text="📊 Relatórios" styleClass="btn-lateral"
-                    maxWidth="Infinity" onAction="#navegarRelatorios"/>
+            <Button fx:id="btnHome" text="Página principal" styleClass="btn-lateral, btn-lateral-ativo"
+                    maxWidth="Infinity" onAction="#navegarHome">
+                <graphic><ImageView fitWidth="18" fitHeight="18" preserveRatio="true">
+                    <image><Image url="@../Images/home.png"/></image></ImageView></graphic>
+            </Button>
+            <Button fx:id="btnAutores" text="Gerenciar autores" styleClass="btn-lateral"
+                    maxWidth="Infinity" onAction="#navegarAutores">
+                <graphic><ImageView fitWidth="18" fitHeight="18" preserveRatio="true">
+                    <image><Image url="@../Images/autores.png"/></image></ImageView></graphic>
+            </Button>
+            <Button fx:id="btnAvaliadores" text="Gerenciar avaliadores" styleClass="btn-lateral"
+                    maxWidth="Infinity" onAction="#navegarAvaliadores">
+                <graphic><ImageView fitWidth="18" fitHeight="18" preserveRatio="true">
+                    <image><Image url="@../Images/avaliadores.png"/></image></ImageView></graphic>
+            </Button>
+            <Button fx:id="btnObras" text="Gerenciar obra" styleClass="btn-lateral"
+                    maxWidth="Infinity" onAction="#navegarObras">
+                <graphic><ImageView fitWidth="18" fitHeight="18" preserveRatio="true">
+                    <image><Image url="@../Images/obras.png"/></image></ImageView></graphic>
+            </Button>
+            <Button fx:id="btnRelatorios" text="Relatórios" styleClass="btn-lateral"
+                    maxWidth="Infinity" onAction="#navegarRelatorios">
+                <graphic><ImageView fitWidth="18" fitHeight="18" preserveRatio="true">
+                    <image><Image url="@../Images/relatorio.png"/></image></ImageView></graphic>
+            </Button>
 
             <VBox spacing="4" VBox.vgrow="ALWAYS"/>
 
             <HBox alignment="CENTER">
-                <Button fx:id="btnSair" text="🚪 Sair" styleClass="btn-sair"
-                        onAction="#handleSair"/>
+                <Button fx:id="btnSair" text="Sair" styleClass="btn-sair"
+                        onAction="#handleSair">
+                    <graphic><ImageView fitWidth="18" fitHeight="18" preserveRatio="true">
+                        <image><Image url="@../Images/sair.png"/></image></ImageView></graphic>
+                </Button>
             </HBox>
         </VBox>
 

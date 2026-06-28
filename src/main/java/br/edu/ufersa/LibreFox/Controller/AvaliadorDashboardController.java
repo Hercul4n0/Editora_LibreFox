@@ -5,6 +5,7 @@ import br.edu.ufersa.LibreFox.Model.entities.Sessao;
 import br.edu.ufersa.LibreFox.Model.exceptions.AcessoNegadoException;
 import br.edu.ufersa.LibreFox.Model.service.ObraService;
 import br.edu.ufersa.LibreFox.util.Conexao;
+import br.edu.ufersa.LibreFox.util.Icones;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,10 +14,16 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.awt.Desktop;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -95,12 +102,20 @@ public class AvaliadorDashboardController implements DashboardController {
             return new SimpleStringProperty(feedback);
         });
         colAcoes.setCellFactory(col -> new TableCell<>() {
-            private final Button btnAvaliar = new Button("📋 Avaliar");
+            private final Button btnAvaliar = new Button("Avaliar");
+            private final Button btnBaixar = new Button("Baixar");
             {
+                btnAvaliar.setGraphic(Icones.icone("avaliar.png", 16));
                 btnAvaliar.getStyleClass().addAll("btn-acao", "btn-acao-verde");
                 btnAvaliar.setOnAction(e -> {
                     Obra obra = getTableView().getItems().get(getIndex());
                     abrirDialogoAvaliacao(obra);
+                });
+                btnBaixar.setGraphic(Icones.icone("baixar.png", 16));
+                btnBaixar.getStyleClass().addAll("btn-acao", "btn-acao-azul");
+                btnBaixar.setOnAction(e -> {
+                    Obra obra = getTableView().getItems().get(getIndex());
+                    baixarArquivo(obra);
                 });
             }
             @Override
@@ -111,7 +126,14 @@ public class AvaliadorDashboardController implements DashboardController {
                     return;
                 }
                 Obra obra = getTableView().getItems().get(getIndex());
-                setGraphic(obra.getStatus() == 0 ? btnAvaliar : null);
+                HBox box = new HBox(8);
+                // Baixar disponível sempre (para ler a obra, mesmo já avaliada).
+                box.getChildren().add(btnBaixar);
+                // Avaliar só enquanto a obra está em avaliação.
+                if (obra.getStatus() == 0) {
+                    box.getChildren().add(btnAvaliar);
+                }
+                setGraphic(box);
             }
         });
     }
@@ -134,7 +156,11 @@ public class AvaliadorDashboardController implements DashboardController {
         campoFeedback.setPromptText("Escreva um feedback curto sugerindo ajustes e correções ao autor (opcional)");
         campoFeedback.setPrefRowCount(4);
 
+        Button btnAbrir = new Button("Abrir arquivo da obra");
+        btnAbrir.setOnAction(ev -> abrirArquivo(obra));
+
         VBox content = new VBox(10,
+                btnAbrir,
                 new Label("Feedback (opcional)"),
                 campoFeedback);
         dialog.getDialogPane().setContent(content);
@@ -190,6 +216,70 @@ public class AvaliadorDashboardController implements DashboardController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /** Abre o arquivo da obra no aplicativo padrão do sistema. */
+    private void abrirArquivo(Obra obra) {
+        String caminho = obra.getArquivo();
+        if (caminho == null || caminho.isBlank()) {
+            mostrarAlerta("Aviso", "Esta obra não possui arquivo anexado.");
+            return;
+        }
+        File arquivo = new File(caminho);
+        if (!arquivo.exists()) {
+            mostrarAlerta("Aviso", "O arquivo da obra não foi encontrado:\n" + caminho);
+            return;
+        }
+        if (!Desktop.isDesktopSupported()) {
+            mostrarAlerta("Aviso", "Abertura de arquivos não é suportada neste sistema.");
+            return;
+        }
+        try {
+            Desktop.getDesktop().open(arquivo);
+        } catch (IOException e) {
+            e.printStackTrace();
+            mostrarAlerta("Erro", "Não foi possível abrir o arquivo: " + e.getMessage());
+        }
+    }
+
+    /** Baixa (salva uma cópia) o arquivo da obra em um local escolhido pelo avaliador. */
+    private void baixarArquivo(Obra obra) {
+        String caminho = obra.getArquivo();
+        if (caminho == null || caminho.isBlank()) {
+            mostrarAlerta("Aviso", "Esta obra não possui arquivo anexado.");
+            return;
+        }
+        File origem = new File(caminho);
+        if (!origem.exists()) {
+            mostrarAlerta("Aviso", "O arquivo da obra não foi encontrado:\n" + caminho);
+            return;
+        }
+
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Baixar arquivo da obra");
+        fc.setInitialFileName(nomeSugerido(origem.getName()));
+        File destino = fc.showSaveDialog(tblObras.getScene().getWindow());
+        if (destino == null) return;
+
+        try {
+            Files.copy(origem.toPath(), destino.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            mostrarAlerta("Sucesso", "Arquivo salvo em:\n" + destino.getAbsolutePath());
+        } catch (IOException e) {
+            e.printStackTrace();
+            mostrarAlerta("Erro", "Não foi possível baixar o arquivo: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Remove o prefixo de unicidade ("<millis>_") usado no armazenamento,
+     * sugerindo o nome original do arquivo no diálogo de download.
+     */
+    private String nomeSugerido(String nomeArmazenado) {
+        int sep = nomeArmazenado.indexOf('_');
+        if (sep > 0 && nomeArmazenado.substring(0, sep).matches("\\d+")) {
+            return nomeArmazenado.substring(sep + 1);
+        }
+        return nomeArmazenado;
     }
 
     private void mostrarAlerta(String titulo, String mensagem) {
