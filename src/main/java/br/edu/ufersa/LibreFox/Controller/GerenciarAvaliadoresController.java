@@ -353,11 +353,11 @@ public class GerenciarAvaliadoresController implements DashboardController {
     @FXML
     private void handleSair() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/br/edu/ufersa/LibreFox/view/LoginView.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/LoginView.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) tblAvaliadores.getScene().getWindow();
-            Scene scene = new Scene(root);
-            scene.getStylesheets().add(getClass().getResource("/br/edu/ufersa/LibreFox/view/style.css").toExternalForm());
+            Scene scene = new Scene(root, 1200, 800);
+            scene.getStylesheets().add(getClass().getResource("/CSS/style.css").toExternalForm());
             stage.setScene(scene);
             stage.setMaximized(false);
             stage.show();
@@ -368,16 +368,17 @@ public class GerenciarAvaliadoresController implements DashboardController {
 
     private void navegarPara(String fxml) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/br/edu/ufersa/LibreFox/view/" + fxml));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/Views/" + fxml));
             Parent root = loader.load();
             Object controller = loader.getController();
             if (controller instanceof DashboardController) {
                 ((DashboardController) controller).setSessao(sessao);
             }
             Stage stage = (Stage) tblAvaliadores.getScene().getWindow();
-            Scene scene = new Scene(root);
-            scene.getStylesheets().add(getClass().getResource("/br/edu/ufersa/LibreFox/view/style.css").toExternalForm());
+            Scene scene = new Scene(root, 1200, 800);
+            scene.getStylesheets().add(getClass().getResource("/CSS/style.css").toExternalForm());
             stage.setScene(scene);
+            stage.setMaximized(true);
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();

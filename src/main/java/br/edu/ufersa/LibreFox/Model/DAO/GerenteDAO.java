@@ -12,6 +12,7 @@ public class GerenteDAO extends UsuarioDAO<Gerente> {
         super(connection);
     }
 
+
     // -------------------------------------------------------------------------
     // br.edu.ufersa.LibreFox.editora.DAO.BaseDAO — CREATE
     // -------------------------------------------------------------------------

@@ -5,7 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
+import br.edu.ufersa.LibreFox.util.Conexao;
 import java.io.IOException;
 import java.net.URL;
 
@@ -21,6 +21,7 @@ import java.net.URL;
  * navegação e qualquer funcionalidade que dependa do usuário logado.
  */
 public class TesteJavaFX extends Application {
+
 
     private static final String CSS_PATH = "/CSS/style.css";
     private static final String VIEW_LOGIN = "/Views/LoginView.fxml";
