@@ -92,7 +92,8 @@
                     <TableColumn fx:id="colStatus" text="Status" prefWidth="120"/>
                     <TableColumn fx:id="colAno" text="Ano" prefWidth="80"/>
                     <TableColumn fx:id="colAvaliador" text="Avaliador" prefWidth="150"/>
-                    <TableColumn fx:id="colAcoes" text="Ações" prefWidth="120"/>
+                    <TableColumn fx:id="colFeedback" text="Feedback" prefWidth="220"/>
+                    <TableColumn fx:id="colAcoes" text="Ações" prefWidth="170" sortable="false"/>
                 </columns>
             </TableView>
         </VBox>

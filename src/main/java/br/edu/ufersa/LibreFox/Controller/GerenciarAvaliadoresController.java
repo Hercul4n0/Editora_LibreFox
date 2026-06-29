@@ -82,9 +82,9 @@ public class GerenciarAvaliadoresController implements DashboardController {
                 new SimpleStringProperty(String.valueOf(cell.getValue().getObrasParaAvaliar().size())));
 
         colAcoes.setCellFactory(col -> new TableCell<>() {
-            private final Button btnEditar = new Button("Editar");
-            private final Button btnExcluir = new Button("Excluir");
-            private final Button btnVerObras = new Button("Obras");
+            private final Button btnEditar = new Button();
+            private final Button btnExcluir = new Button();
+            private final Button btnVerObras = new Button();
             {
                 btnEditar.setGraphic(Icones.icone("editar.png", 16));
                 btnExcluir.setGraphic(Icones.icone("deletar-lixeira.png", 16));
@@ -92,6 +92,9 @@ public class GerenciarAvaliadoresController implements DashboardController {
                 btnEditar.getStyleClass().addAll("btn-acao", "btn-acao-azul");
                 btnExcluir.getStyleClass().addAll("btn-acao", "btn-acao-vermelho");
                 btnVerObras.getStyleClass().addAll("btn-acao", "btn-acao-verde");
+                btnEditar.setTooltip(new Tooltip("Editar"));
+                btnExcluir.setTooltip(new Tooltip("Excluir"));
+                btnVerObras.setTooltip(new Tooltip("Ver obras atribuídas"));
 
                 btnEditar.setOnAction(e -> {
                     Avaliador avaliador = getTableView().getItems().get(getIndex());

@@ -121,6 +121,12 @@ public class ObraService implements IObraService {
             throw new IllegalStateException(
                     "Só é possível designar avaliador para obras em avaliação.");
         }
+        // Regra de negócio: ninguém pode avaliar a própria obra, mesmo que a
+        // mesma pessoa acumule os perfis Autor e Avaliador.
+        if (obra.getAutor() != null && obra.getAutor().getId() == avaliador.getId()) {
+            throw new IllegalArgumentException(
+                    "O autor de uma obra não pode ser designado avaliador da própria obra.");
+        }
 
         obraDAO.definirAvaliador(obra, avaliador);
         obra.setAvaliador(avaliador);
@@ -130,7 +136,13 @@ public class ObraService implements IObraService {
     // AVALIAÇÃO — somente o avaliador designado
     // -------------------------------------------------------------------------
 
+    /** Sobrecarga sem feedback, mantida por compatibilidade. */
     public void avaliar(Obra obra, short novoStatus, Sessao sessao)
+            throws SQLException, AcessoNegadoException {
+        avaliar(obra, novoStatus, null, sessao);
+    }
+
+    public void avaliar(Obra obra, short novoStatus, String feedback, Sessao sessao)
             throws SQLException, AcessoNegadoException {
         if (obra == null) {
             throw new IllegalArgumentException("Obra não pode ser nula.");
@@ -151,9 +163,10 @@ public class ObraService implements IObraService {
         }
 
         LocalDate hoje = LocalDate.now();
-        obraDAO.registrarAvaliacao(obra, novoStatus, hoje);
+        obraDAO.registrarAvaliacao(obra, novoStatus, hoje, feedback);
         obra.setStatus(novoStatus);
         obra.setDataAvaliacao(hoje);
+        obra.setFeedback(feedback);
     }
 
     // -------------------------------------------------------------------------

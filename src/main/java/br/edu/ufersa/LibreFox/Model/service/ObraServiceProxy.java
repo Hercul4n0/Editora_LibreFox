@@ -62,11 +62,21 @@ public class ObraServiceProxy implements IObraService {
         if (sessao == null || !sessao.podeGerenciar()) {
             throw new AcessoNegadoException("Apenas o gerente pode designar avaliadores.");
         }
+        if (obra.getAutor() != null && obra.getAutor().getId() == avaliador.getId()) {
+            throw new IllegalArgumentException(
+                    "O autor de uma obra não pode ser designado avaliador da própria obra.");
+        }
         obraServiceReal.designarAvaliador(obra, avaliador, sessao);
     }
 
     @Override
     public void avaliar(Obra obra, short novoStatus, Sessao sessao)
+            throws SQLException, AcessoNegadoException {
+        avaliar(obra, novoStatus, null, sessao);
+    }
+
+    @Override
+    public void avaliar(Obra obra, short novoStatus, String feedback, Sessao sessao)
             throws SQLException, AcessoNegadoException {
         if (obra == null) {
             throw new IllegalArgumentException("Obra não pode ser nula.");
@@ -77,7 +87,7 @@ public class ObraServiceProxy implements IObraService {
         if (obra.getAvaliador() == null || obra.getAvaliador().getId() != sessao.getUsuarioId()) {
             throw new AcessoNegadoException("Você não é o avaliador designado para esta obra.");
         }
-        obraServiceReal.avaliar(obra, novoStatus, sessao);
+        obraServiceReal.avaliar(obra, novoStatus, feedback, sessao);
     }
 
     @Override

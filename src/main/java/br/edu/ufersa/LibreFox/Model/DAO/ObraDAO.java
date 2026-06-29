@@ -75,7 +75,7 @@ public class ObraDAO implements BaseDAO<Obra> {
                 UPDATE obra
                 SET titulo = ?, genero = ?, ano = ?, status = ?,
                     autor_id = ?, avaliador_id = ?,
-                    data_submissao = ?, data_avaliacao = ?, arquivo = ?
+                    data_submissao = ?, data_avaliacao = ?, arquivo = ?, feedback = ?
                 WHERE id = ?
                 """;
 
@@ -99,7 +99,8 @@ public class ObraDAO implements BaseDAO<Obra> {
                 stmt.setNull(8, Types.DATE);
 
             stmt.setString(9, obra.getArquivo());
-            stmt.setString(10, obra.getId());
+            stmt.setString(10, obra.getFeedback());
+            stmt.setString(11, obra.getId());
             stmt.executeUpdate();
         }
     }
@@ -218,15 +219,16 @@ public class ObraDAO implements BaseDAO<Obra> {
         }
     }
 
-    /** Persiste o veredicto de uma avaliação (status + data). */
+    /** Persiste o veredicto de uma avaliação (status + data + feedback). */
     public void registrarAvaliacao(Obra obra, short novoStatus,
-                                   LocalDate dataAvaliacao) throws SQLException {
-        String sql = "UPDATE obra SET status = ?, data_avaliacao = ? WHERE id = ?";
+                                   LocalDate dataAvaliacao, String feedback) throws SQLException {
+        String sql = "UPDATE obra SET status = ?, data_avaliacao = ?, feedback = ? WHERE id = ?";
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setShort(1, novoStatus);
             stmt.setDate(2, Date.valueOf(dataAvaliacao));
-            stmt.setString(3, obra.getId());
+            stmt.setString(3, feedback);
+            stmt.setString(4, obra.getId());
             stmt.executeUpdate();
         }
     }
@@ -267,6 +269,7 @@ public class ObraDAO implements BaseDAO<Obra> {
         if (dataAval != null) obra.setDataAvaliacao(dataAval.toLocalDate());
 
         obra.setArquivo(rs.getString("arquivo"));
+        obra.setFeedback(rs.getString("feedback"));
 
         long avaliadorId = rs.getLong("avaliador_id");
         if (!rs.wasNull()) {

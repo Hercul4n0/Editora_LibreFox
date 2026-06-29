@@ -250,29 +250,35 @@
     -fx-cursor: hand;
 }
 
-/* Botões pequenos de ação nas tabelas (editar / excluir / avaliar / designar) */
+/* Botões pequenos de ação nas tabelas (editar / excluir / avaliar / designar).
+   Só ícone, sem texto: numa célula com vários botões, texto sempre acaba
+   sendo cortado ("..."); o ícone com tooltip resolve isso sem perder clareza. */
 .btn-acao {
-    -fx-background-radius: 16;
-    -fx-padding: 5 12 5 12;
-    -fx-font-size: 12px;
+    -fx-background-radius: 8;
+    -fx-padding: 6;
+    -fx-min-width: 30;
+    -fx-min-height: 30;
+    -fx-max-width: 30;
+    -fx-max-height: 30;
     -fx-cursor: hand;
     -fx-background-color: #f1e3f4;
-    -fx-text-fill: #6e1080;
+    -fx-content-display: GRAPHIC_ONLY;
+}
+
+.btn-acao:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 4, 0, 0, 1);
 }
 
 .btn-acao-azul {
     -fx-background-color: #f1e3f4;
-    -fx-text-fill: #6e1080;
 }
 
 .btn-acao-verde {
     -fx-background-color: #d4edda;
-    -fx-text-fill: #1e7e34;
 }
 
 .btn-acao-vermelho {
     -fx-background-color: #f8d7da;
-    -fx-text-fill: #a71d2a;
 }
 
 /* ---------- MENU LATERAL ---------- */
@@ -313,6 +319,7 @@
     -fx-border-color: #E85D04;
     -fx-border-radius: 12;
     -fx-background-radius: 12;
+    -fx-table-cell-border-color: transparent;
 }
 
 .table-view .column-header-background {
@@ -334,13 +341,15 @@
 }
 
 .table-view .table-cell {
-    -fx-padding: 12 14 12 14;
+    -fx-padding: 10 12 10 12;
     -fx-alignment: CENTER;
+    -fx-text-overflow: ellipsis;
 }
 
 .table-view .table-row-cell {
     -fx-background-color: white;
     -fx-border-color: transparent transparent #f1e3f4 transparent;
+    -fx-pref-height: 48;
 }
 
 .table-view .table-row-cell:odd {
@@ -349,6 +358,24 @@
 
 .table-view .table-row-cell:selected {
     -fx-background-color: #f1d9f5;
+}
+
+/* Linhas "fantasma" que o JavaFX desenha quando há mais espaço vertical
+   do que itens na lista — sem isso, ficavam aparecendo como uma grade
+   vazia esticada até o fim do painel. */
+.table-view .table-row-cell:empty {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+}
+
+.table-view .table-row-cell:empty .table-cell {
+    -fx-border-width: 0;
+}
+
+/* Barra de rolagem horizontal: sempre visível quando as colunas somadas
+   passam da largura do painel, em vez de cortar conteúdo. */
+.table-view .scroll-bar:horizontal {
+    -fx-pref-height: 14;
 }
 
 /* ---------- CARDS DE RESUMO ---------- */

@@ -192,10 +192,11 @@ public class GerenteDashboardController implements DashboardController {
             }
         });
         colAcoes.setCellFactory(col -> new TableCell<>() {
-            private final Button btnAvaliar = new Button("Avaliar");
+            private final Button btnAvaliar = new Button();
             {
                 btnAvaliar.setGraphic(Icones.icone("avaliar.png", 16));
                 btnAvaliar.getStyleClass().add("btn-acao");
+                btnAvaliar.setTooltip(new Tooltip("Apenas o avaliador designado pode avaliar"));
                 btnAvaliar.setOnAction(e -> {
                     // A avaliação em si só pode ser feita pelo avaliador designado
                     // (ver AvaliadorDashboardController); aqui o gerente só consulta.

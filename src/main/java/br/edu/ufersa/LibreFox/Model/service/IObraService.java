@@ -30,6 +30,9 @@ public interface IObraService {
     void avaliar(Obra obra, short novoStatus, Sessao sessao)
             throws SQLException, AcessoNegadoException;
 
+    void avaliar(Obra obra, short novoStatus, String feedback, Sessao sessao)
+            throws SQLException, AcessoNegadoException;
+
     ArrayList<Obra> listarObrasDoAutor(Sessao sessao) throws SQLException, AcessoNegadoException;
 
     ArrayList<Obra> listarObrasDoAvaliador(Sessao sessao) throws SQLException, AcessoNegadoException;

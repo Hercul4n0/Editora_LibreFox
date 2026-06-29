@@ -73,13 +73,15 @@ public class GerenciarAutoresController implements DashboardController {
                 new SimpleStringProperty(String.valueOf(cell.getValue().getObrasEnviadas().size())));
 
         colAcoes.setCellFactory(col -> new TableCell<>() {
-            private final Button btnEditar = new Button("Editar");
-            private final Button btnExcluir = new Button("Excluir");
+            private final Button btnEditar = new Button();
+            private final Button btnExcluir = new Button();
             {
                 btnEditar.setGraphic(Icones.icone("editar.png", 16));
                 btnExcluir.setGraphic(Icones.icone("deletar-lixeira.png", 16));
                 btnEditar.getStyleClass().addAll("btn-acao", "btn-acao-azul");
                 btnExcluir.getStyleClass().addAll("btn-acao", "btn-acao-vermelho");
+                btnEditar.setTooltip(new Tooltip("Editar"));
+                btnExcluir.setTooltip(new Tooltip("Excluir"));
                 btnEditar.setOnAction(e -> {
                     Autor autor = getTableView().getItems().get(getIndex());
                     editarAutor(autor);

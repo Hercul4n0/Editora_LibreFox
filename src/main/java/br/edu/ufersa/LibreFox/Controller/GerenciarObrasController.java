@@ -56,6 +56,7 @@ public class GerenciarObrasController implements DashboardController {
     @FXML private TableColumn<Obra, String> colStatus;
     @FXML private TableColumn<Obra, String> colAno;
     @FXML private TableColumn<Obra, String> colAvaliador;
+    @FXML private TableColumn<Obra, String> colFeedback;
     @FXML private TableColumn<Obra, String> colAcoes;
 
     private Sessao sessao;
@@ -151,6 +152,27 @@ public class GerenciarObrasController implements DashboardController {
             return new SimpleStringProperty("Sem avaliador");
         });
 
+        colFeedback.setCellValueFactory(cell -> {
+            String feedback = cell.getValue().getFeedback();
+            if (feedback == null || feedback.isBlank()) {
+                feedback = (cell.getValue().getStatus() == 0) ? "—" : "Sem feedback";
+            }
+            return new SimpleStringProperty(feedback);
+        });
+        colFeedback.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setTooltip(null);
+                    return;
+                }
+                setText(item);
+                setTooltip(new Tooltip(item));
+            }
+        });
+
         colAcoes.setCellFactory(col -> new TableCell<>() {
             private final Button btnDesignar = new Button();
             private final Button btnEditar = new Button();
@@ -166,6 +188,10 @@ public class GerenciarObrasController implements DashboardController {
                 btnEditar.getStyleClass().addAll("btn-acao", "btn-acao-verde");
                 btnExcluir.getStyleClass().addAll("btn-acao", "btn-acao-vermelho");
                 btnBaixar.getStyleClass().addAll("btn-acao", "btn-acao-azul");
+                btnDesignar.setTooltip(new Tooltip("Designar avaliador"));
+                btnEditar.setTooltip(new Tooltip("Editar"));
+                btnExcluir.setTooltip(new Tooltip("Excluir"));
+                btnBaixar.setTooltip(new Tooltip("Baixar arquivo"));
 
                 btnDesignar.setOnAction(e -> {
                     Obra obra = getTableView().getItems().get(getIndex());
@@ -224,8 +250,17 @@ public class GerenciarObrasController implements DashboardController {
             AvaliadorDAO avaliadorDAO = new AvaliadorDAO(conn);
             List<Avaliador> avaliadores = avaliadorDAO.listar();
 
+            // O autor de uma obra nunca pode ser o avaliador dela mesma —
+            // nem oferecemos essa opção na lista, para deixar a regra clara
+            // já na interface (a checagem real continua em ObraService).
+            avaliadores = avaliadores.stream()
+                    .filter(a -> obra.getAutor() == null || a.getId() != obra.getAutor().getId())
+                    .collect(java.util.stream.Collectors.toList());
+
             if (avaliadores.isEmpty()) {
-                mostrarAlerta("Aviso", "Não há avaliadores cadastrados para designar.");
+                mostrarAlerta("Aviso",
+                        "Não há avaliadores disponíveis para designar a esta obra.\n" +
+                                "(o autor da obra não pode avaliar a própria obra)");
                 return;
             }
 

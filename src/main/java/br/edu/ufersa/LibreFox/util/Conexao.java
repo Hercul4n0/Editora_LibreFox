@@ -9,7 +9,7 @@ public class Conexao {
    // private static final String URL  = "jdbc:mysql://localhost/librefox_editora?useSSL=false&serverTimezone=America/Recife&allowPublicKeyRetrieval=true";
     private static final String URL  = "jdbc:mysql://localhost:3306/librefox_editora";
     private static final String USER = "root";
-    private static final String PASS = "zatibel";
+    private static final String PASS = "root";
 
     private static Connection connection = null;
 

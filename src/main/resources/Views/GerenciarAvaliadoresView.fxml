@@ -91,7 +91,7 @@
                     <TableColumn fx:id="colCpf" text="CPF" prefWidth="150"/>
                     <TableColumn fx:id="colEndereco" text="Endereço" prefWidth="200"/>
                     <TableColumn fx:id="colObrasAtribuidas" text="Obras atribuídas" prefWidth="120"/>
-                    <TableColumn fx:id="colAcoes" text="Ações" prefWidth="150"/>
+                    <TableColumn fx:id="colAcoes" text="Ações" prefWidth="140" sortable="false"/>
                 </columns>
             </TableView>
         </VBox>

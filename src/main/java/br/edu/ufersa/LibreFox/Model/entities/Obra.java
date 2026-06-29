@@ -13,6 +13,7 @@ public class Obra {
     private LocalDate dataSubmissao;
     private LocalDate dataAvaliacao;
     private String arquivo;
+    private String feedback;
 
 
     public Obra(String titulo, String genero, Short ano, Short status, Autor autor, String id) {
@@ -75,4 +76,12 @@ public class Obra {
 
     public String getArquivo() { return arquivo; }
     public void setArquivo(String arquivo) { this.arquivo = arquivo; }
+
+    /**
+     * Comentário curto que o avaliador deixa ao aceitar ou rejeitar a obra,
+     * sugerindo ajustes e correções ao autor. Visível para Autor, Avaliador
+     * e Gerente — todos podem acompanhar o motivo da decisão.
+     */
+    public String getFeedback() { return feedback; }
+    public void setFeedback(String feedback) { this.feedback = feedback; }
 }

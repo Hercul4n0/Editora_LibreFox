@@ -179,19 +179,31 @@ public class AutorDashboardController implements DashboardController {
             }
         });
         colFeedback.setCellValueFactory(cell -> {
-            String feedback = "Não";
-            if (cell.getValue().getStatus() == 1) {
-                feedback = "Aceito";
-            } else if (cell.getValue().getStatus() == 2) {
-                feedback = "Rejeitado";
+            String feedback = cell.getValue().getFeedback();
+            if (feedback == null || feedback.isBlank()) {
+                feedback = (cell.getValue().getStatus() == 0) ? "—" : "Sem feedback";
             }
             return new SimpleStringProperty(feedback);
+        });
+        colFeedback.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setTooltip(null);
+                    return;
+                }
+                setText(item);
+                setTooltip(new Tooltip(item));
+            }
         });
         colAcoes.setCellFactory(col -> new TableCell<>() {
             private final Button btnEditar = new Button();
             {
                 btnEditar.setGraphic(Icones.icone("editar.png", 16));
                 btnEditar.getStyleClass().add("btn-acao");
+                btnEditar.setTooltip(new Tooltip("Editar"));
                 btnEditar.setOnAction(e -> {
                     Obra obra = getTableView().getItems().get(getIndex());
                     mostrarAlerta("Info", "Edição de \"" + obra.getTitulo() + "\" em desenvolvimento.");

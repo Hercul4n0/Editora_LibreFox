@@ -144,26 +144,39 @@ public class AvaliadorDashboardController implements DashboardController {
         colAutor.setCellValueFactory(cell ->
                 new SimpleStringProperty(cell.getValue().getAutor().getNome()));
         colFeedback.setCellValueFactory(cell -> {
-            String feedback = "Não";
-            if (cell.getValue().getStatus() == 1) {
-                feedback = "Aceito";
-            } else if (cell.getValue().getStatus() == 2) {
-                feedback = "Rejeitado";
+            String feedback = cell.getValue().getFeedback();
+            if (feedback == null || feedback.isBlank()) {
+                feedback = (cell.getValue().getStatus() == 0) ? "—" : "Sem feedback";
             }
             return new SimpleStringProperty(feedback);
         });
+        colFeedback.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setTooltip(null);
+                    return;
+                }
+                setText(item);
+                setTooltip(new Tooltip(item));
+            }
+        });
         colAcoes.setCellFactory(col -> new TableCell<>() {
-            private final Button btnAvaliar = new Button("Avaliar");
-            private final Button btnBaixar = new Button("Baixar");
+            private final Button btnAvaliar = new Button();
+            private final Button btnBaixar = new Button();
             {
                 btnAvaliar.setGraphic(Icones.icone("avaliar.png", 16));
                 btnAvaliar.getStyleClass().addAll("btn-acao", "btn-acao-verde");
+                btnAvaliar.setTooltip(new Tooltip("Avaliar"));
                 btnAvaliar.setOnAction(e -> {
                     Obra obra = getTableView().getItems().get(getIndex());
                     abrirDialogoAvaliacao(obra);
                 });
                 btnBaixar.setGraphic(Icones.icone("baixar.png", 16));
                 btnBaixar.getStyleClass().addAll("btn-acao", "btn-acao-azul");
+                btnBaixar.setTooltip(new Tooltip("Baixar arquivo"));
                 btnBaixar.setOnAction(e -> {
                     Obra obra = getTableView().getItems().get(getIndex());
                     baixarArquivo(obra);
@@ -225,7 +238,8 @@ public class AvaliadorDashboardController implements DashboardController {
         dialog.showAndWait().ifPresent(novoStatus -> {
             try (Connection conn = Conexao.getConnection()) {
                 IObraService obraService = new ObraServiceProxy(conn);
-                obraService.avaliar(obra, novoStatus, sessao);
+                String feedback = campoFeedback.getText().trim();
+                obraService.avaliar(obra, novoStatus, feedback.isEmpty() ? null : feedback, sessao);
                 carregarDados();
                 mostrarAlerta("Sucesso", novoStatus == ObraService.ACEITA
                         ? "Obra aceita com sucesso!"
