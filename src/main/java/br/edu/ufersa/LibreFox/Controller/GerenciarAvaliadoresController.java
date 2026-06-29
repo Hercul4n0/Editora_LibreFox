@@ -5,6 +5,7 @@ import br.edu.ufersa.LibreFox.Model.DAO.ObraDAO;
 import br.edu.ufersa.LibreFox.Model.entities.Avaliador;
 import br.edu.ufersa.LibreFox.Model.entities.Endereco;
 import br.edu.ufersa.LibreFox.Model.entities.Obra;
+import br.edu.ufersa.LibreFox.Model.entities.Perfil;
 import br.edu.ufersa.LibreFox.Model.entities.Sessao;
 import br.edu.ufersa.LibreFox.util.Conexao;
 import br.edu.ufersa.LibreFox.util.Icones;
@@ -143,6 +144,8 @@ public class GerenciarAvaliadoresController implements DashboardController {
         TextField campoBairro = new TextField(end.getBairro());
         TextField campoCidade = new TextField(end.getCidade());
         TextField campoUf = new TextField(end.getUf());
+        CheckBox campoTambemGerente = new CheckBox("Também é Gerente");
+        campoTambemGerente.setSelected(avaliador.temPerfil(Perfil.GERENTE));
 
         grid.add(new Label("Nome:"), 0, 0);
         grid.add(campoNome, 1, 0);
@@ -162,6 +165,8 @@ public class GerenciarAvaliadoresController implements DashboardController {
         grid.add(campoCidade, 1, 7);
         grid.add(new Label("UF:"), 0, 8);
         grid.add(campoUf, 1, 8);
+        grid.add(new Label("Perfil extra:"), 0, 9);
+        grid.add(campoTambemGerente, 1, 9);
 
         dialog.getDialogPane().setContent(grid);
 
@@ -181,6 +186,14 @@ public class GerenciarAvaliadoresController implements DashboardController {
                     avaliador.setLogin(campoLogin.getText().trim());
                     if (!campoSenha.getText().isEmpty()) {
                         avaliador.setSenha(campoSenha.getText().trim());
+                    }
+
+                    // Permite que esta conta também tenha o perfil de Gerente
+                    // (mesma conta, podendo escolher entre os dois ao logar).
+                    if (campoTambemGerente.isSelected()) {
+                        avaliador.adicionarPerfil(Perfil.GERENTE);
+                    } else {
+                        avaliador.removerPerfil(Perfil.GERENTE);
                     }
 
                     new AvaliadorDAO(conn).atualizar(avaliador);
@@ -291,6 +304,7 @@ public class GerenciarAvaliadoresController implements DashboardController {
         campoCidade.setPromptText("Cidade");
         TextField campoUf = new TextField();
         campoUf.setPromptText("UF");
+        CheckBox campoTambemGerente = new CheckBox("Também é Gerente");
 
         grid.add(new Label("Nome:"), 0, 0);
         grid.add(campoNome, 1, 0);
@@ -310,6 +324,8 @@ public class GerenciarAvaliadoresController implements DashboardController {
         grid.add(campoCidade, 1, 7);
         grid.add(new Label("UF:"), 0, 8);
         grid.add(campoUf, 1, 8);
+        grid.add(new Label("Perfil extra:"), 0, 9);
+        grid.add(campoTambemGerente, 1, 9);
 
         dialog.getDialogPane().setContent(grid);
 
@@ -335,6 +351,11 @@ public class GerenciarAvaliadoresController implements DashboardController {
                     );
 
                     Avaliador avaliador = new Avaliador(nome, cpf, endereco, login, senha);
+                    // Permite criar a conta já com os dois perfis (Avaliador e
+                    // Gerente), podendo escolher entre eles ao logar.
+                    if (campoTambemGerente.isSelected()) {
+                        avaliador.adicionarPerfil(Perfil.GERENTE);
+                    }
                     new AvaliadorDAO(conn).inserir(avaliador);
 
                     carregarDados();

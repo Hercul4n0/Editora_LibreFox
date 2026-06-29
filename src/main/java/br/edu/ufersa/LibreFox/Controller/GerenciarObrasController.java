@@ -1,12 +1,12 @@
 package br.edu.ufersa.LibreFox.Controller;
 
 import br.edu.ufersa.LibreFox.Model.DAO.AvaliadorDAO;
-import br.edu.ufersa.LibreFox.Model.DAO.ObraDAO;
 import br.edu.ufersa.LibreFox.Model.entities.Avaliador;
 import br.edu.ufersa.LibreFox.Model.entities.Obra;
 import br.edu.ufersa.LibreFox.Model.entities.Sessao;
 import br.edu.ufersa.LibreFox.Model.exceptions.AcessoNegadoException;
-import br.edu.ufersa.LibreFox.Model.service.ObraService;
+import br.edu.ufersa.LibreFox.Model.service.IObraService;
+import br.edu.ufersa.LibreFox.Model.service.ObraServiceProxy;
 import br.edu.ufersa.LibreFox.util.Conexao;
 import br.edu.ufersa.LibreFox.util.Icones;
 import javafx.beans.property.SimpleStringProperty;
@@ -66,8 +66,8 @@ public class GerenciarObrasController implements DashboardController {
     @Override
     public void carregarDados() {
         try (Connection conn = Conexao.getConnection()) {
-            ObraDAO obraDAO = new ObraDAO(conn);
-            List<Obra> obras = obraDAO.listar();
+            IObraService obraService = new ObraServiceProxy(conn);
+            List<Obra> obras = obraService.listar(sessao);
 
             obrasList.setAll(obras);
             configurarTabela();
@@ -89,6 +89,8 @@ public class GerenciarObrasController implements DashboardController {
         } catch (SQLException e) {
             e.printStackTrace();
             mostrarAlerta("Erro", "Erro ao carregar dados: " + e.getMessage());
+        } catch (AcessoNegadoException e) {
+            mostrarAlerta("Acesso negado", e.getMessage());
         }
     }
 
@@ -257,7 +259,7 @@ public class GerenciarObrasController implements DashboardController {
                     try (Connection conn2 = Conexao.getConnection()) {
                         // Regra f): somente o gerente pode designar avaliadores —
                         // verificação garantida dentro do ObraService.
-                        new ObraService(conn2).designarAvaliador(obra, avaliador, sessao);
+                        new ObraServiceProxy(conn2).designarAvaliador(obra, avaliador, sessao);
                         tblObras.refresh();
                         mostrarAlertaInfo("Sucesso",
                                 "Avaliador " + avaliador.getNome() + " designado com sucesso!");
@@ -317,7 +319,7 @@ public class GerenciarObrasController implements DashboardController {
                     // Status NÃO é alterado aqui — somente via ObraService.avaliar(),
                     // chamado pelo avaliador designado.
 
-                    new ObraService(conn).alterar(obra, sessao);
+                    new ObraServiceProxy(conn).alterar(obra, sessao);
                     carregarDados();
                     mostrarAlertaInfo("Sucesso", "Obra atualizada com sucesso!");
 
@@ -342,7 +344,7 @@ public class GerenciarObrasController implements DashboardController {
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 try (Connection conn = Conexao.getConnection()) {
-                    new ObraService(conn).excluir(obra, sessao);
+                    new ObraServiceProxy(conn).excluir(obra, sessao);
                     obrasList.remove(obra);
                     mostrarAlertaInfo("Sucesso", "Obra excluída com sucesso!");
                 } catch (SQLException e) {
@@ -362,13 +364,13 @@ public class GerenciarObrasController implements DashboardController {
         String anoFiltro = cmbAno.getSelectionModel().getSelectedItem();
 
         try (Connection conn = Conexao.getConnection()) {
-            ObraDAO obraDAO = new ObraDAO(conn);
+            IObraService obraService = new ObraServiceProxy(conn);
             List<Obra> resultados;
 
             if (!termo.isEmpty()) {
-                resultados = obraDAO.buscarPorTitulo(termo);
+                resultados = obraService.buscarPorTitulo(termo, sessao);
             } else {
-                resultados = obraDAO.listar();
+                resultados = obraService.listar(sessao);
             }
 
             // Aplicar filtros
@@ -396,6 +398,8 @@ public class GerenciarObrasController implements DashboardController {
         } catch (SQLException e) {
             e.printStackTrace();
             mostrarAlerta("Erro", "Erro na busca: " + e.getMessage());
+        } catch (AcessoNegadoException e) {
+            mostrarAlerta("Acesso negado", e.getMessage());
         } catch (NumberFormatException e) {
             mostrarAlerta("Erro", "Ano inválido!");
         }

@@ -7,20 +7,15 @@ public class Relatorio {
 
     private LocalDate dataInicial;
     private LocalDate dataFinal;
-    private Avaliador avaliadoPor;      // null = relatório geral de todos os avaliadores
+    private Avaliador avaliadoPor;
     private ArrayList<Obra> obras;
 
     public Relatorio(LocalDate dataInicial, LocalDate dataFinal, Avaliador avaliadoPor) {
         setDataInicial(dataInicial);
         setDataFinal(dataFinal);
-        this.avaliadoPor = avaliadoPor; // pode ser null (relatório geral)
+        this.avaliadoPor = avaliadoPor;
         this.obras = new ArrayList<>();
     }
-
-    // -------------------------------------------------------------------------
-    // GETTERS E SETTERS
-    // -------------------------------------------------------------------------
-
     public LocalDate getDataInicial() { return dataInicial; }
     public void setDataInicial(LocalDate dataInicial) {
         if (dataInicial != null) this.dataInicial = dataInicial;
@@ -40,6 +35,5 @@ public class Relatorio {
 
     public ArrayList<Obra> getObras() { return obras; }
 
-    // Derivado da lista — não precisa ser armazenado separadamente
     public int getNumDeObras() { return obras.size(); }
 }

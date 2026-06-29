@@ -23,10 +23,6 @@ public class Usuario {
         setPerfis(perfis);
     }
 
-    // -------------------------------------------------------------------------
-    // PERFIS
-    // -------------------------------------------------------------------------
-
     public Set<Perfil> getPerfis() {
         return perfis;
     }
@@ -48,10 +44,6 @@ public class Usuario {
     public boolean temPerfil(Perfil perfil) {
         return this.perfis.contains(perfil);
     }
-
-    // -------------------------------------------------------------------------
-    // GETTERS E SETTERS
-    // -------------------------------------------------------------------------
 
     public long getId() {
         return id;

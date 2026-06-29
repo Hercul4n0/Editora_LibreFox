@@ -10,17 +10,11 @@ public class Obra {
     private Short status;
     private Autor autor;
     private Avaliador avaliador;
-    private LocalDate dataSubmissao;   // quando o autor enviou a obra
-    private LocalDate dataAvaliacao;   // quando o avaliador deu o veredicto
-    private String arquivo;            // caminho do arquivo da obra (txt/pdf/docx)
+    private LocalDate dataSubmissao;
+    private LocalDate dataAvaliacao;
+    private String arquivo;
 
-    // ERRO CORRIGIDO 10: havia um segundo construtor que deixava "genero" e "ano"
-    // sempre nulos. Como esses campos são obrigatórios pelo mini mundo (toda Obra
-    // precisa de Título, Gênero, Ano, Autor e Status), esse construtor permitia
-    // criar uma Obra em estado inválido — e ao tentar persistir essa Obra, o
-    // br.edu.ufersa.LibreFox.editora.DAO.ObraDAO.inserir() sofreria NullPointerException ao converter Short -> short.
-    // Removido por não ser usado em nenhum lugar do código e por violar a regra
-    // de negócio. Use sempre o construtor completo abaixo.
+
     public Obra(String titulo, String genero, Short ano, Short status, Autor autor, String id) {
         setTitulo(titulo);
         setGenero(genero);
@@ -30,10 +24,6 @@ public class Obra {
         setId(id);
         this.dataSubmissao = LocalDate.now();
     }
-
-    // -------------------------------------------------------------------------
-    // GETTERS E SETTERS
-    // -------------------------------------------------------------------------
 
     public String getId() { return id; }
     public void setId(String id) {

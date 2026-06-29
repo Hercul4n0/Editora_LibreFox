@@ -14,7 +14,6 @@ public class Autor extends Usuario {
         super(nome, cpf, endereco, login, senha, EnumSet.of(Perfil.AUTOR));
     }
 
-    // Construtor para usuário que também é avaliador
     public Autor(String nome, String cpf, Endereco endereco,
                  String login, String senha, Set<Perfil> perfis) {
         super(nome, cpf, endereco, login, senha, perfis);

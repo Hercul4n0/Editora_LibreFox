@@ -2,12 +2,18 @@ package br.edu.ufersa.LibreFox.Controller;
 
 import br.edu.ufersa.LibreFox.Model.entities.Autor;
 import br.edu.ufersa.LibreFox.Model.entities.Obra;
+import br.edu.ufersa.LibreFox.Model.entities.Perfil;
 import br.edu.ufersa.LibreFox.Model.entities.Sessao;
+import br.edu.ufersa.LibreFox.Model.entities.Usuario;
 import br.edu.ufersa.LibreFox.Model.exceptions.AcessoNegadoException;
+import br.edu.ufersa.LibreFox.Model.service.IObraService;
 import br.edu.ufersa.LibreFox.Model.service.ObraService;
+import br.edu.ufersa.LibreFox.Model.service.ObraServiceProxy;
 import br.edu.ufersa.LibreFox.util.ArquivoObra;
 import br.edu.ufersa.LibreFox.util.Conexao;
 import br.edu.ufersa.LibreFox.util.Icones;
+import br.edu.ufersa.LibreFox.util.SeletorPerfil;
+import br.edu.ufersa.LibreFox.util.UsuarioLookup;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -26,7 +32,9 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class AutorDashboardController implements DashboardController {
 
@@ -45,6 +53,7 @@ public class AutorDashboardController implements DashboardController {
     @FXML private TableColumn<Obra, String> colStatus;
     @FXML private TableColumn<Obra, String> colFeedback;
     @FXML private TableColumn<Obra, String> colAcoes;
+    @FXML private Button btnTrocarPerfil;
 
     private Sessao sessao;
     private final ObservableList<Obra> obrasList = FXCollections.observableArrayList();
@@ -53,13 +62,55 @@ public class AutorDashboardController implements DashboardController {
     public void setSessao(Sessao sessao) {
         this.sessao = sessao;
         lblSaudacao.setText("Olá, " + sessao.getNomeUsuario() + "!");
+        if (btnTrocarPerfil != null) {
+            boolean temMaisDeUmPerfil = sessao.getUsuario().getPerfis().size() > 1;
+            btnTrocarPerfil.setVisible(temMaisDeUmPerfil);
+            btnTrocarPerfil.setManaged(temMaisDeUmPerfil);
+        }
         carregarDados();
+    }
+
+    /** Permite trocar para outro perfil da mesma conta, sem precisar logar de novo. */
+    @FXML
+    private void handleTrocarPerfil() {
+        Set<Perfil> outros = new HashSet<>(sessao.getUsuario().getPerfis());
+        outros.remove(sessao.getPerfilAtivo());
+        if (outros.isEmpty()) return;
+
+        Perfil destino = outros.size() == 1 ? outros.iterator().next() : SeletorPerfil.escolher(outros);
+        if (destino == null) return;
+
+        String fxml = switch (destino) {
+            case AUTOR -> "/Views/AutorDashboardView.fxml";
+            case AVALIADOR -> "/Views/AvaliadorDashboardView.fxml";
+            case GERENTE -> "/Views/GerenteDashboardView.fxml";
+        };
+
+        try (Connection conn = Conexao.getConnection()) {
+            Usuario usuarioTipado = UsuarioLookup.buscarPorLoginEPerfil(conn, sessao.getUsuario().getLogin(), destino);
+            Sessao novaSessao = new Sessao(usuarioTipado, destino);
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
+            Parent root = loader.load();
+            Object controller = loader.getController();
+            if (controller instanceof DashboardController dc) {
+                dc.setSessao(novaSessao);
+            }
+            tblObras.getScene().setRoot(root);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            mostrarAlerta("Erro", "Erro ao trocar de perfil: " + e.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+            mostrarAlerta("Erro", "Erro ao abrir o painel: " + e.getMessage());
+        }
     }
 
     @Override
     public void carregarDados() {
         try (Connection conn = Conexao.getConnection()) {
-            ObraService obraService = new ObraService(conn);
+            IObraService obraService = new ObraServiceProxy(conn);
             // Regra de negócio g): o autor só visualiza as próprias obras.
             List<Obra> obras = obraService.listarObrasDoAutor(sessao);
 
@@ -245,7 +296,7 @@ public class AutorDashboardController implements DashboardController {
                 // Copia o arquivo para o armazenamento local e guarda o caminho.
                 obra.setArquivo(ArquivoObra.armazenar(arquivoSelecionado[0]));
 
-                new ObraService(conn).submeter(obra, sessao);
+                new ObraServiceProxy(conn).submeter(obra, sessao);
                 carregarDados();
                 mostrarAlerta("Sucesso", "Obra enviada para avaliação com sucesso!");
 

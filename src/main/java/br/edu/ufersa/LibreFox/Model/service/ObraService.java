@@ -27,7 +27,7 @@ import java.util.ArrayList;
  * Violações de autorização lançam {@link AcessoNegadoException}, uma exceção
  * de domínio própria do LibreFox.
  */
-public class ObraService {
+public class ObraService implements IObraService {
 
     // Status da obra (convenção do mini mundo — ainda não é enum).
     public static final short EM_AVALIACAO = 0;

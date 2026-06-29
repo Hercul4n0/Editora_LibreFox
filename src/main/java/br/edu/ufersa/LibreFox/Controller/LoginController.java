@@ -1,10 +1,9 @@
 package br.edu.ufersa.LibreFox.Controller;
 
-import br.edu.ufersa.LibreFox.Model.DAO.AutorDAO;
-import br.edu.ufersa.LibreFox.Model.DAO.AvaliadorDAO;
-import br.edu.ufersa.LibreFox.Model.DAO.GerenteDAO;
 import br.edu.ufersa.LibreFox.Model.entities.*;
 import br.edu.ufersa.LibreFox.util.Conexao;
+import br.edu.ufersa.LibreFox.util.SeletorPerfil;
+import br.edu.ufersa.LibreFox.util.UsuarioLookup;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,6 +13,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Set;
 
 public class LoginController {
 
@@ -30,57 +30,7 @@ public class LoginController {
 
     @FXML private TextField campoLogin;
     @FXML private PasswordField campoSenha;
-    @FXML private Button btnPerfilAutor;
-    @FXML private Button btnPerfilAvaliador;
-    @FXML private Button btnPerfilGerente;
     @FXML private Label lblMensagemErro;
-
-
-
-
-    private Perfil perfilSelecionado = Perfil.AUTOR;
-
-    @FXML
-    public void initialize() {
-        atualizarEstiloPerfil();
-    }
-
-    @FXML
-    private void selecionarPerfil(javafx.event.ActionEvent event) {
-        Button btn = (Button) event.getSource();
-        if (btn == btnPerfilAutor) {
-            perfilSelecionado = Perfil.AUTOR;
-        } else if (btn == btnPerfilAvaliador) {
-            perfilSelecionado = Perfil.AVALIADOR;
-        } else if (btn == btnPerfilGerente) {
-            perfilSelecionado = Perfil.GERENTE;
-        }
-        atualizarEstiloPerfil();
-    }
-
-    private void atualizarEstiloPerfil() {
-        btnPerfilAutor.getStyleClass().remove("btn-primario");
-        btnPerfilAvaliador.getStyleClass().remove("btn-primario");
-        btnPerfilGerente.getStyleClass().remove("btn-primario");
-        btnPerfilAutor.getStyleClass().add("btn-azul-claro");
-        btnPerfilAvaliador.getStyleClass().add("btn-azul-claro");
-        btnPerfilGerente.getStyleClass().add("btn-azul-claro");
-
-        switch (perfilSelecionado) {
-            case AUTOR:
-                btnPerfilAutor.getStyleClass().remove("btn-azul-claro");
-                btnPerfilAutor.getStyleClass().add("btn-primario");
-                break;
-            case AVALIADOR:
-                btnPerfilAvaliador.getStyleClass().remove("btn-azul-claro");
-                btnPerfilAvaliador.getStyleClass().add("btn-primario");
-                break;
-            case GERENTE:
-                btnPerfilGerente.getStyleClass().remove("btn-azul-claro");
-                btnPerfilGerente.getStyleClass().add("btn-primario");
-                break;
-        }
-    }
 
     @FXML
     private void handleLogin() {
@@ -93,32 +43,41 @@ public class LoginController {
         }
 
         try (Connection conn = Conexao.getConnection()) {
+            // A conta é localizada tentando cada perfil — qualquer um que
+            // encontre a linha já traz o conjunto COMPLETO de perfis do
+            // usuário (UsuarioDAO.buscarPerfis carrega tudo, não só o
+            // perfil usado no filtro da consulta).
             Usuario usuario = null;
-
-            switch (perfilSelecionado) {
-                case AUTOR:
-                    usuario = new AutorDAO(conn).buscarPorLogin(login);
-                    break;
-                case AVALIADOR:
-                    usuario = new AvaliadorDAO(conn).buscarPorLogin(login);
-                    break;
-                case GERENTE:
-                    usuario = new GerenteDAO(conn).buscarPorLogin(login);
-                    break;
+            for (Perfil perfil : Perfil.values()) {
+                usuario = UsuarioLookup.buscarPorLoginEPerfil(conn, login, perfil);
+                if (usuario != null) break;
             }
 
             if (usuario == null) {
                 lblMensagemErro.setText("Usuário não encontrado!");
                 return;
             }
-
             if (!usuario.getSenha().equals(senha)) {
                 lblMensagemErro.setText("Senha incorreta!");
                 return;
             }
 
-            // Criar sessão
-            Sessao sessao = new Sessao(usuario, perfilSelecionado);
+            Set<Perfil> perfisDisponiveis = usuario.getPerfis();
+            if (perfisDisponiveis.size() <= 1) {
+                Sessao sessao = new Sessao(usuario, perfisDisponiveis.iterator().next());
+                abrirDashboard(sessao);
+                return;
+            }
+
+            // Conta com mais de um perfil: deixa o usuário escolher como entrar.
+            Perfil perfilEscolhido = SeletorPerfil.escolher(perfisDisponiveis);
+            if (perfilEscolhido == null) return; // cancelou a escolha
+
+            // Refaz a busca com o DAO do perfil escolhido para obter o
+            // objeto no subtipo certo (Autor/Avaliador/Gerente) — os
+            // dashboards dependem desse tipo certo para fazer cast.
+            Usuario usuarioTipado = UsuarioLookup.buscarPorLoginEPerfil(conn, login, perfilEscolhido);
+            Sessao sessao = new Sessao(usuarioTipado, perfilEscolhido);
             abrirDashboard(sessao);
 
         } catch (SQLException e) {

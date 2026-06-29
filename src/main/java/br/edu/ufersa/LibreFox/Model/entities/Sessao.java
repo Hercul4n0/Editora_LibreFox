@@ -17,10 +17,6 @@ public class Sessao {
         this.perfilAtivo = perfilAtivo;
     }
 
-    // -------------------------------------------------------------------------
-    // VERIFICAÇÕES DE PERMISSÃO
-    // -------------------------------------------------------------------------
-
     public boolean podeGerenciar() {
         return perfilAtivo == Perfil.GERENTE;
     }
@@ -33,9 +29,6 @@ public class Sessao {
         return perfilAtivo == Perfil.AUTOR;
     }
 
-    // -------------------------------------------------------------------------
-    // GETTERS
-    // -------------------------------------------------------------------------
 
     public Usuario getUsuario() {
         return usuario;

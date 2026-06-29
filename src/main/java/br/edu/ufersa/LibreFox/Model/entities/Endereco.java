@@ -8,7 +8,6 @@ public class Endereco {
     private String cidade;
     private String uf;
 
-    // ERRO CORRIGIDO 1: construtor não atribuía os parâmetros aos atributos
     public Endereco(String numero, String bairro, String logradouro, String cidade, String uf) {
         setNumero(numero);
         setBairro(bairro);
@@ -21,7 +20,6 @@ public class Endereco {
         return id;
     }
 
-    // ERRO CORRIGIDO 2: setId lançava exceção para id == 0, mas 0 é válido como ID gerado pelo banco
     public void setId(long id) {
         if (id >= 0) {
             this.id = id;
@@ -58,7 +56,6 @@ public class Endereco {
         return logradouro;
     }
 
-    // ERRO CORRIGIDO 3: atributo era "Logradouro" (maiúsculo) — renomeado para "logradouro"
     public void setLogradouro(String logradouro) {
         if (logradouro != null && !logradouro.isBlank()) {
             this.logradouro = logradouro;

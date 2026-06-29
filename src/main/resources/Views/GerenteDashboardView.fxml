@@ -60,6 +60,12 @@
             <VBox spacing="4" VBox.vgrow="ALWAYS"/>
 
             <HBox alignment="CENTER">
+                <Button fx:id="btnTrocarPerfil" text="Trocar perfil" styleClass="btn-lateral"
+                        maxWidth="Infinity" onAction="#handleTrocarPerfil"
+                        visible="false" managed="false"/>
+            </HBox>
+
+            <HBox alignment="CENTER">
                 <Button fx:id="btnSair" text="Sair" styleClass="btn-sair"
                         onAction="#handleSair">
                     <graphic><ImageView fitWidth="18" fitHeight="18" preserveRatio="true">

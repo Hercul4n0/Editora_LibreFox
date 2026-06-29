@@ -14,7 +14,6 @@ public class Avaliador extends Usuario {
         super(nome, cpf, endereco, login, senha, EnumSet.of(Perfil.AVALIADOR));
     }
 
-    // Construtor para usuário que também é autor
     public Avaliador(String nome, String cpf, Endereco endereco,
                      String login, String senha, Set<Perfil> perfis) {
         super(nome, cpf, endereco, login, senha, perfis);

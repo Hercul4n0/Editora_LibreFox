@@ -70,17 +70,6 @@
                                        styleClass="campo-texto"/>
                     </VBox>
 
-                    <!-- Seletor de Perfil (DEBUG) -->
-                    <HBox spacing="8" alignment="CENTER_LEFT">
-                        <Label text="Perfil:" style="-fx-font-weight: 600; -fx-text-fill: #333;"/>
-                        <Button fx:id="btnPerfilAutor" text="Autor" styleClass="btn-azul-claro"
-                                onAction="#selecionarPerfil"/>
-                        <Button fx:id="btnPerfilAvaliador" text="Avaliador" styleClass="btn-azul-claro"
-                                onAction="#selecionarPerfil"/>
-                        <Button fx:id="btnPerfilGerente" text="Gerente" styleClass="btn-azul-claro"
-                                onAction="#selecionarPerfil"/>
-                    </HBox>
-
                     <Label fx:id="lblMensagemErro" styleClass="msg-erro" wrapText="true"/>
 
                     <Button text="Entrar" styleClass="btn-primario" maxWidth="Infinity"
