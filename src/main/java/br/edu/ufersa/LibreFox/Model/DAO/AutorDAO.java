@@ -12,10 +12,6 @@ public class AutorDAO extends UsuarioDAO<Autor> {
         super(connection);
     }
 
-    // -------------------------------------------------------------------------
-    // br.edu.ufersa.LibreFox.editora.DAO.BaseDAO — CREATE
-    // -------------------------------------------------------------------------
-
     @Override
     public Autor inserir(Autor autor) throws SQLException {
         enderecoDAO.salvar(autor.getEndereco());
@@ -24,10 +20,6 @@ public class AutorDAO extends UsuarioDAO<Autor> {
         salvarPerfis(id, autor.getPerfis());
         return autor;
     }
-
-    // -------------------------------------------------------------------------
-    // br.edu.ufersa.LibreFox.editora.DAO.BaseDAO — READ
-    // -------------------------------------------------------------------------
 
     @Override
     public ArrayList<Autor> listar() throws SQLException {
@@ -46,10 +38,6 @@ public class AutorDAO extends UsuarioDAO<Autor> {
         return lista;
     }
 
-    // -------------------------------------------------------------------------
-    // br.edu.ufersa.LibreFox.editora.DAO.BaseDAO — UPDATE
-    // -------------------------------------------------------------------------
-
     @Override
     public void atualizar(Autor autor) throws SQLException {
         enderecoDAO.atualizar(autor.getEndereco());
@@ -57,18 +45,10 @@ public class AutorDAO extends UsuarioDAO<Autor> {
         atualizarPerfis(autor.getId(), autor.getPerfis());
     }
 
-    // -------------------------------------------------------------------------
-    // br.edu.ufersa.LibreFox.editora.DAO.BaseDAO — DELETE
-    // -------------------------------------------------------------------------
-
     @Override
     public void deletar(Autor autor) throws SQLException {
         deletarUsuario(autor.getId());
     }
-
-    // -------------------------------------------------------------------------
-    // BUSCAS ESPECÍFICAS
-    // -------------------------------------------------------------------------
 
     public Autor buscarPorId(long id) throws SQLException {
         String sql = """
@@ -99,9 +79,6 @@ public class AutorDAO extends UsuarioDAO<Autor> {
         }
         return null;
     }
-
-    // ERRO CORRIGIDO 6: buscarPorNome declarava ArrayList<Autor> lista sem usá-la,
-    // e retornava apenas o primeiro resultado. Corrigido para retornar todos os resultados.
     public ArrayList<Autor> buscarPorNome(String nome) throws SQLException {
         String sql = """
                 SELECT DISTINCT u.* FROM usuario u

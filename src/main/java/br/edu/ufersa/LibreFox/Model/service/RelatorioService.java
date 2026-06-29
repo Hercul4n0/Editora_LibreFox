@@ -9,13 +9,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
-/**
- * Geração de relatórios de obras avaliadas em um período.
- *
- * Regra de negócio: <b>somente o gerente</b> pode gerar relatórios. O
- * {@link RelatorioDAO} apenas consulta; a autorização e a validação do período
- * ficam aqui.
- */
 public class RelatorioService {
 
     private final RelatorioDAO relatorioDAO;
@@ -24,9 +17,6 @@ public class RelatorioService {
         this.relatorioDAO = new RelatorioDAO(connection);
     }
 
-    /**
-     * Relatório de todas as obras avaliadas (aceitas ou rejeitadas) no período.
-     */
     public Relatorio gerarPorPeriodo(LocalDate dataInicial, LocalDate dataFinal,
                                      Sessao sessao) throws SQLException {
         exigirGerente(sessao);
@@ -34,9 +24,6 @@ public class RelatorioService {
         return relatorioDAO.gerarPorPeriodo(dataInicial, dataFinal);
     }
 
-    /**
-     * Relatório das obras avaliadas por um avaliador específico no período.
-     */
     public Relatorio gerarPorPeriodoEAvaliador(LocalDate dataInicial, LocalDate dataFinal,
                                                Avaliador avaliador, Sessao sessao) throws SQLException {
         exigirGerente(sessao);
@@ -47,9 +34,7 @@ public class RelatorioService {
         return relatorioDAO.gerarPorPeriodoEAvaliador(dataInicial, dataFinal, avaliador);
     }
 
-    // -------------------------------------------------------------------------
-    // AUTORIZAÇÃO / VALIDAÇÃO
-    // -------------------------------------------------------------------------
+    //Validação
 
     private void exigirGerente(Sessao sessao) {
         if (sessao == null || !sessao.podeGerenciar()) {

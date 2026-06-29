@@ -9,13 +9,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-/**
- * Casos de uso ligados a Avaliadores.
- *
- * Regra de negócio: <b>somente o gerente</b> pode cadastrar, alterar e excluir
- * avaliadores. As buscas são abertas (usadas, por exemplo, na designação de
- * avaliadores e em relatórios).
- */
 public class AvaliadorService {
 
     private final AvaliadorDAO avaliadorDAO;
@@ -23,10 +16,6 @@ public class AvaliadorService {
     public AvaliadorService(Connection connection) {
         this.avaliadorDAO = new AvaliadorDAO(connection);
     }
-
-    // -------------------------------------------------------------------------
-    // CADASTRO / ALTERAÇÃO / EXCLUSÃO — restritos ao gerente
-    // -------------------------------------------------------------------------
 
     public Avaliador cadastrar(Avaliador avaliador, Sessao sessao) throws SQLException, AcessoNegadoException {
         if (avaliador == null) {
@@ -52,9 +41,6 @@ public class AvaliadorService {
         avaliadorDAO.deletar(avaliador);
     }
 
-    // -------------------------------------------------------------------------
-    // BUSCAS
-    // -------------------------------------------------------------------------
 
     public ArrayList<Avaliador> listar() throws SQLException {
         return avaliadorDAO.listar();
@@ -76,19 +62,14 @@ public class AvaliadorService {
         return avaliadorDAO.buscarPorLogin(login);
     }
 
-    /** Avaliador designado para uma obra (busca de avaliadores por obra). */
     public Avaliador buscarPorObra(String obraId) throws SQLException {
         return avaliadorDAO.buscarPorObra(obraId);
     }
 
-    /** Avaliadores que ainda têm obras pendentes de avaliação. */
     public ArrayList<Avaliador> listarComObrasPendentes() throws SQLException {
         return avaliadorDAO.listarComObrasPendentes();
     }
 
-    // -------------------------------------------------------------------------
-    // AUTORIZAÇÃO
-    // -------------------------------------------------------------------------
 
     private void exigirGerente(Sessao sessao, String acao) throws AcessoNegadoException {
         if (sessao == null || !sessao.podeGerenciar()) {

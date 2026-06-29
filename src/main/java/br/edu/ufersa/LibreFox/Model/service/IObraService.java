@@ -9,14 +9,6 @@ import br.edu.ufersa.LibreFox.Model.exceptions.OperacaoInvalidaException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-/**
- * Contrato dos casos de uso de Obra ("Subject" do padrão Proxy).
- *
- * Permite que o controle de acesso por perfil ({@link ObraServiceProxy}) e a
- * implementação real das regras de negócio ({@link ObraService}) sejam dois
- * objetos distintos, intercambiáveis pelos controllers sem nenhuma mudança
- * nas chamadas.
- */
 public interface IObraService {
 
     Obra submeter(Obra obra, Sessao sessao) throws SQLException, AcessoNegadoException;

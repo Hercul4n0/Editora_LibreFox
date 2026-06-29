@@ -3,12 +3,6 @@ package br.edu.ufersa.LibreFox.Model.entities;
 import java.util.List;
 import java.util.ArrayList;
 
-/**
- * @deprecated Esta classe era usada para agregar o estado da editora em memória.
- * Com a introdução dos DAOs e da camada de serviço, toda a persistência e
- * gerenciamento de estado passou a ser responsabilidade dos DAOs e da Sessao.
- * Mantida apenas para não quebrar referências existentes.
- */
 @Deprecated
 public class Editora {
     private String name;

@@ -98,8 +98,6 @@ public class ObraService implements IObraService {
             throw new OperacaoInvalidaException(
                     "Só é possível designar avaliador para obras em avaliação.");
         }
-        // Regra de negócio: ninguém pode avaliar a própria obra, mesmo que a
-        // mesma pessoa acumule os perfis Autor e Avaliador.
         if (obra.getAutor() != null && obra.getAutor().getId() == avaliador.getId()) {
             throw new OperacaoInvalidaException(
                     "O autor de uma obra não pode ser designado avaliador da própria obra.");
@@ -110,11 +108,6 @@ public class ObraService implements IObraService {
         notificarDesignacao(obra, avaliador);
     }
 
-    // -------------------------------------------------------------------------
-    // AVALIAÇÃO — somente o avaliador designado
-    // -------------------------------------------------------------------------
-
-    /** Sobrecarga sem feedback, mantida por compatibilidade. */
     public void avaliar(Obra obra, short novoStatus, Sessao sessao)
             throws SQLException, AcessoNegadoException, OperacaoInvalidaException {
         avaliar(obra, novoStatus, null, sessao);
@@ -160,17 +153,12 @@ public class ObraService implements IObraService {
         return obraDAO.buscarPorAutor(sessao.getUsuarioId());
     }
 
-    /** Avaliador só visualiza as obras designadas a ele. */
     public ArrayList<Obra> listarObrasDoAvaliador(Sessao sessao) throws SQLException, AcessoNegadoException {
         if (sessao == null || !sessao.podeAvaliar()) {
             throw new AcessoNegadoException("Acesso negado: perfil ativo não é avaliador.");
         }
         return obraDAO.buscarPorAvaliador(sessao.getUsuarioId());
     }
-
-    // -------------------------------------------------------------------------
-    // CATÁLOGO E BUSCAS GERAIS — somente o gerente (visão completa)
-    // -------------------------------------------------------------------------
 
     public ArrayList<Obra> listar(Sessao sessao) throws SQLException, AcessoNegadoException {
         exigirGerente(sessao);
@@ -197,20 +185,9 @@ public class ObraService implements IObraService {
         return obraDAO.buscarPorAno(ano);
     }
 
-    /**
-     * Carrega uma obra pelo id. Lookup utilitário (sem restrição de perfil) —
-     * a visibilidade efetiva é garantida pelas operações que consomem a obra.
-     */
     public Obra buscarPorId(String id) throws SQLException {
         return obraDAO.buscarPorId(id);
     }
-
-    // -------------------------------------------------------------------------
-    // OBSERVER — dispara os listeners registrados após cada transição já
-    // persistida com sucesso. Uma notificação é um efeito best-effort: se um
-    // listener falhar, o erro é só registrado (e os demais listeners ainda
-    // são chamados) — nunca desfaz a operação de negócio, que já foi salva.
-    // -------------------------------------------------------------------------
 
     private void notificarSubmissao(Obra obra) {
         for (ObraEventListener listener : LISTENERS) {
@@ -241,10 +218,6 @@ public class ObraService implements IObraService {
             }
         }
     }
-
-    // -------------------------------------------------------------------------
-    // AUTORIZAÇÃO
-    // -------------------------------------------------------------------------
 
     private void exigirGerente(Sessao sessao) throws AcessoNegadoException {
         if (sessao == null || !sessao.podeGerenciar()) {

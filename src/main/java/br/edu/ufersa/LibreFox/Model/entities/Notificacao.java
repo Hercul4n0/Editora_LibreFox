@@ -2,14 +2,6 @@ package br.edu.ufersa.LibreFox.Model.entities;
 
 import java.time.LocalDateTime;
 
-/**
- * Notificação dirigida a um usuário, gerada a partir de um evento do ciclo
- * de vida de uma obra (submissão, designação de avaliador, avaliação).
- *
- * É o efeito visível, na próxima vez que o destinatário entrar no sistema,
- * dos observadores registrados em {@code ObraService} (ver
- * {@code Model.service.ObraEventListener} e {@code NotificacaoObserver}).
- */
 public class Notificacao {
 
     private long id;

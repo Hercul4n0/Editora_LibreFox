@@ -7,13 +7,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-/**
- * Casos de uso ligados a Gerentes.
- *
- * O cadastro de gerente é uma operação de bootstrap do sistema (alguém precisa
- * existir como gerente antes de qualquer regra "somente gerente" poder ser
- * aplicada), portanto não exige uma {@link br.edu.ufersa.LibreFox.Model.entities.Sessao}.
- */
 public class GerenteService {
 
     private final GerenteDAO gerenteDAO;
@@ -21,10 +14,6 @@ public class GerenteService {
     public GerenteService(Connection connection) {
         this.gerenteDAO = new GerenteDAO(connection);
     }
-
-    // -------------------------------------------------------------------------
-    // CADASTRO / ALTERAÇÃO / EXCLUSÃO
-    // -------------------------------------------------------------------------
 
     public Gerente cadastrar(Gerente gerente) throws SQLException {
         if (gerente == null) {
@@ -46,10 +35,6 @@ public class GerenteService {
         }
         gerenteDAO.deletar(gerente);
     }
-
-    // -------------------------------------------------------------------------
-    // BUSCAS
-    // -------------------------------------------------------------------------
 
     public ArrayList<Gerente> listar() throws SQLException {
         return gerenteDAO.listar();

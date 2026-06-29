@@ -10,16 +10,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-/**
- * Protection Proxy para {@link IObraService}.
- *
- * Intercepta toda chamada antes de delegar ao {@link ObraService} real,
- * aplicando um gate grosso por perfil de sessão (gerente / autor / avaliador).
- * Não substitui as checagens internas de {@code ObraService} (posse da obra,
- * estado da obra, avaliador designado) — essas continuam ali como defesa em
- * profundidade, pois dependem de regras de negócio específicas da obra que
- * um proxy genérico de perfil não tem como replicar com segurança.
- */
 public class ObraServiceProxy implements IObraService {
 
     private final ObraService obraServiceReal;
