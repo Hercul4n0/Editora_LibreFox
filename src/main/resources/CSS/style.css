@@ -1,0 +1,454 @@
+/* ============================================================
+   LibreFox — Folha de estilos
+   Paleta extraída do protótipo (PDF) do projeto:
+     - Roxo  (sidebar / painel esquerdo do login): #8B0F9D
+     - Roxo escuro (gradiente, canto superior)   : #4B0066
+     - Magenta (gradiente, meio)                  : #B23FB0
+     - Laranja (ações primárias, destaques, logo) : #E85D04
+     - Laranja escuro (hover)                     : #C94E03
+   ============================================================ */
+
+/* ---------- RESET E BASE ---------- */
+* {
+    -fx-font-family: "Segoe UI";
+}
+
+.root {
+    -fx-background-color: #f3f1f7;
+    -fx-font-size: 14px;
+}
+
+/* ---------- PAINÉIS E CONTAINERS ---------- */
+.painel-principal {
+    -fx-background-color: #f3f1f7;
+}
+
+.painel-branco {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-effect: dropshadow(gaussian, rgba(60,0,80,0.10), 16, 0, 0, 4);
+}
+
+.painel-cinza {
+    -fx-background-color: #f6f1f8;
+    -fx-background-radius: 12;
+    -fx-border-color: #e8c9ec;
+    -fx-border-radius: 12;
+    -fx-padding: 15;
+}
+
+/* Painel lateral (menu) — roxo sólido, igual ao protótipo */
+.painel-lateral {
+    -fx-background-color: #8B0F9D;
+    -fx-padding: 24 0 20 0;
+    -fx-min-width: 220;
+    -fx-pref-width: 220;
+}
+
+/* ---------- TÍTULOS ---------- */
+.titulo-principal {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #E85D04;
+}
+
+.titulo-secao {
+    -fx-font-size: 20px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #4B0066;
+}
+
+.titulo-subsecao {
+    -fx-font-size: 16px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #E85D04;
+}
+
+.titulo-login {
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333344;
+}
+
+/* ---------- LOGO ---------- */
+.logo-texto {
+    -fx-font-size: 26px;
+    -fx-font-weight: 800;
+    -fx-text-fill: white;
+}
+
+.logo-subtexto {
+    -fx-font-size: 11px;
+    -fx-text-fill: rgba(255,255,255,0.75);
+}
+
+/* Logo dentro do cartão de login (fundo branco) */
+.logo-texto-claro {
+    -fx-font-size: 30px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #E85D04;
+}
+
+.logo-subtexto-claro {
+    -fx-font-size: 12px;
+    -fx-text-fill: #777788;
+}
+
+/* ---------- LABELS ---------- */
+.label-descricao {
+    -fx-font-size: 13px;
+    -fx-text-fill: #6c757d;
+}
+
+.label-saudacao {
+    -fx-font-size: 22px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #4B0066;
+}
+
+.label-rotulo {
+    -fx-font-size: 12px;
+    -fx-text-fill: #8a7e91;
+}
+
+.label-valor {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #4B0066;
+}
+
+/* ---------- CAMPOS DE TEXTO ---------- */
+.campo-texto,
+.campo-busca,
+.text-area,
+.combo-box,
+.date-picker {
+    -fx-background-color: white;
+    -fx-background-radius: 24;
+    -fx-border-color: #d8c3dc;
+    -fx-border-radius: 24;
+    -fx-font-size: 14px;
+}
+
+.campo-texto {
+    -fx-padding: 12 18 12 18;
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+}
+
+.campo-busca {
+    -fx-padding: 9 18 9 18;
+    -fx-font-size: 13px;
+}
+
+.combo-box {
+    -fx-padding: 4 10 4 10;
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+}
+
+.combo-box .list-cell {
+    -fx-padding: 8 12 8 12;
+}
+
+.campo-texto:focused,
+.campo-busca:focused,
+.combo-box:focused {
+    -fx-border-color: #E85D04;
+}
+
+.campo-texto-erro {
+    -fx-border-color: #dc3545;
+    -fx-border-width: 2;
+}
+
+/* ---------- BOTÕES ---------- */
+.btn-primario,
+.btn-secundario,
+.btn-azul-claro,
+.btn-verde,
+.btn-vermelho,
+.btn-amarelo {
+    -fx-background-radius: 22;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+}
+
+/* Ação principal — laranja sólido (botões "Entrar", "Submeter", "+ Nova obra"...) */
+.btn-primario {
+    -fx-background-color: #E85D04;
+    -fx-text-fill: white;
+    -fx-font-weight: 600;
+    -fx-padding: 10 26 10 26;
+}
+
+.btn-primario:hover {
+    -fx-background-color: #C94E03;
+}
+
+/* Ação secundária (contorno) */
+.btn-secundario {
+    -fx-background-color: transparent;
+    -fx-border-color: #8B0F9D;
+    -fx-border-radius: 22;
+    -fx-text-fill: #8B0F9D;
+    -fx-font-weight: 600;
+    -fx-padding: 10 24 10 24;
+}
+
+.btn-secundario:hover {
+    -fx-background-color: #f6ecf8;
+}
+
+/* Botões de ação rápida (filtro "Buscar", seletor de perfil, etc.) */
+.btn-azul-claro {
+    -fx-background-color: #f1e3f4;
+    -fx-text-fill: #6e1080;
+    -fx-padding: 8 18 8 18;
+}
+
+.btn-azul-claro:hover {
+    -fx-background-color: #e6cdec;
+}
+
+.btn-verde {
+    -fx-background-color: #28a745;
+    -fx-text-fill: white;
+    -fx-padding: 8 18 8 18;
+}
+
+.btn-vermelho {
+    -fx-background-color: #dc3545;
+    -fx-text-fill: white;
+    -fx-padding: 8 18 8 18;
+}
+
+.btn-amarelo {
+    -fx-background-color: #ffc107;
+    -fx-text-fill: #333;
+    -fx-padding: 8 18 8 18;
+}
+
+/* Botão "Sair" no fim do menu lateral */
+.btn-sair {
+    -fx-background-color: transparent;
+    -fx-border-color: rgba(255,255,255,0.5);
+    -fx-border-radius: 22;
+    -fx-text-fill: rgba(255,255,255,0.85);
+    -fx-padding: 8 20 8 20;
+    -fx-cursor: hand;
+}
+
+.btn-sair:hover {
+    -fx-background-color: rgba(255,255,255,0.12);
+}
+
+.btn-link {
+    -fx-background-color: transparent;
+    -fx-text-fill: #8B0F9D;
+    -fx-underline: true;
+    -fx-cursor: hand;
+}
+
+/* Botões pequenos de ação nas tabelas (editar / excluir / avaliar / designar).
+   Só ícone, sem texto: numa célula com vários botões, texto sempre acaba
+   sendo cortado ("..."); o ícone com tooltip resolve isso sem perder clareza. */
+.btn-acao {
+    -fx-background-radius: 8;
+    -fx-padding: 6;
+    -fx-min-width: 30;
+    -fx-min-height: 30;
+    -fx-max-width: 30;
+    -fx-max-height: 30;
+    -fx-cursor: hand;
+    -fx-background-color: #f1e3f4;
+    -fx-content-display: GRAPHIC_ONLY;
+}
+
+.btn-acao:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 4, 0, 0, 1);
+}
+
+.btn-acao-azul {
+    -fx-background-color: #f1e3f4;
+}
+
+.btn-acao-verde {
+    -fx-background-color: #d4edda;
+}
+
+.btn-acao-vermelho {
+    -fx-background-color: #f8d7da;
+}
+
+/* ---------- MENU LATERAL ---------- */
+.btn-lateral {
+    -fx-background-color: transparent;
+    -fx-text-fill: rgba(255,255,255,0.85);
+    -fx-padding: 10 20 10 20;
+    -fx-alignment: CENTER_LEFT;
+    -fx-cursor: hand;
+    -fx-font-size: 14px;
+    -fx-background-radius: 0;
+}
+
+.btn-lateral:hover {
+    -fx-background-color: rgba(255,255,255,0.10);
+}
+
+.btn-lateral-ativo {
+    -fx-background-color: #E85D04;
+    -fx-text-fill: white;
+    -fx-font-weight: 600;
+}
+
+.btn-lateral-ativo:hover {
+    -fx-background-color: #C94E03;
+}
+
+.label-menu-secao {
+    -fx-text-fill: rgba(255,255,255,0.55);
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 14 20 4 20;
+}
+
+/* ---------- TABELA ---------- */
+.table-view {
+    -fx-background-color: transparent;
+    -fx-border-color: #E85D04;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-table-cell-border-color: transparent;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #faf5fb;
+    -fx-background-radius: 12 12 0 0;
+}
+
+.table-view .column-header,
+.table-view .filler {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #E85D04 transparent;
+}
+
+.table-view .column-header .label {
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #4B0066;
+    -fx-alignment: CENTER;
+}
+
+.table-view .table-cell {
+    -fx-padding: 10 12 10 12;
+    -fx-alignment: CENTER;
+    -fx-text-overflow: ellipsis;
+}
+
+.table-view .table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: transparent transparent #f1e3f4 transparent;
+    -fx-pref-height: 48;
+}
+
+.table-view .table-row-cell:odd {
+    -fx-background-color: #fdfbfe;
+}
+
+.table-view .table-row-cell:selected {
+    -fx-background-color: #f1d9f5;
+}
+
+/* Linhas "fantasma" que o JavaFX desenha quando há mais espaço vertical
+   do que itens na lista — sem isso, ficavam aparecendo como uma grade
+   vazia esticada até o fim do painel. */
+.table-view .table-row-cell:empty {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+}
+
+.table-view .table-row-cell:empty .table-cell {
+    -fx-border-width: 0;
+}
+
+/* Barra de rolagem horizontal: sempre visível quando as colunas somadas
+   passam da largura do painel, em vez de cortar conteúdo. */
+.table-view .scroll-bar:horizontal {
+    -fx-pref-height: 14;
+}
+
+/* ---------- CARDS DE RESUMO ---------- */
+.card-resumo {
+    -fx-background-color: white;
+    -fx-background-radius: 14;
+    -fx-border-color: #ecdcef;
+    -fx-border-radius: 14;
+    -fx-padding: 16 22 16 22;
+    -fx-effect: dropshadow(gaussian, rgba(60,0,80,0.06), 8, 0, 0, 2);
+}
+
+/* ---------- LOGIN / CADASTRO ---------- */
+/* Fundo com o gradiente diagonal roxo -> magenta -> laranja do protótipo */
+.painel-login {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%,
+                                           #4B0066 0%,
+                                           #9A2FA0 50%,
+                                           #F08A3C 100%);
+}
+
+/* Painel esquerdo do cartão de login (logo + frase) — roxo escuro sólido */
+.painel-login-esquerdo {
+    -fx-background-color: #2C0B3F;
+    -fx-background-radius: 24 0 0 24;
+}
+
+/* Painel direito do cartão de login (formulário) — branco */
+.painel-login-direito {
+    -fx-background-color: white;
+    -fx-background-radius: 0 24 24 0;
+}
+
+/* ---------- BADGES DE STATUS ---------- */
+.badge-status {
+    -fx-background-radius: 12;
+    -fx-padding: 4 14 4 14;
+    -fx-font-size: 11px;
+    -fx-font-weight: 600;
+}
+
+.badge-avaliacao {
+    -fx-background-color: #f3e3ce;
+    -fx-text-fill: #8a5a16;
+}
+
+.badge-aprovado {
+    -fx-background-color: #d4edda;
+    -fx-text-fill: #1e7e34;
+}
+
+.badge-rejeitado {
+    -fx-background-color: #f8d7da;
+    -fx-text-fill: #a71d2a;
+}
+
+/* ---------- MENSAGENS ---------- */
+.msg-erro {
+    -fx-text-fill: #dc3545;
+    -fx-font-size: 12px;
+}
+
+.msg-sucesso {
+    -fx-text-fill: #1e7e34;
+    -fx-font-size: 12px;
+}
+
+/* ---------- LINKS ---------- */
+.hyperlink {
+    -fx-text-fill: #8B0F9D;
+    -fx-underline: true;
+}
+
+.hyperlink:hover {
+    -fx-text-fill: #E85D04;
+}
