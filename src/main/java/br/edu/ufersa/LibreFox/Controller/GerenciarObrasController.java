@@ -19,9 +19,13 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -151,14 +155,17 @@ public class GerenciarObrasController implements DashboardController {
             private final Button btnDesignar = new Button();
             private final Button btnEditar = new Button();
             private final Button btnExcluir = new Button();
+            private final Button btnBaixar = new Button();
 
             {
                 btnDesignar.setGraphic(Icones.icone("designar.png", 16));
                 btnEditar.setGraphic(Icones.icone("editar.png", 16));
                 btnExcluir.setGraphic(Icones.icone("deletar-lixeira.png", 16));
+                btnBaixar.setGraphic(Icones.icone("baixar.png", 16));
                 btnDesignar.getStyleClass().addAll("btn-acao", "btn-acao-azul");
                 btnEditar.getStyleClass().addAll("btn-acao", "btn-acao-verde");
                 btnExcluir.getStyleClass().addAll("btn-acao", "btn-acao-vermelho");
+                btnBaixar.getStyleClass().addAll("btn-acao", "btn-acao-azul");
 
                 btnDesignar.setOnAction(e -> {
                     Obra obra = getTableView().getItems().get(getIndex());
@@ -172,6 +179,10 @@ public class GerenciarObrasController implements DashboardController {
                     Obra obra = getTableView().getItems().get(getIndex());
                     confirmarExclusao(obra);
                 });
+                btnBaixar.setOnAction(e -> {
+                    Obra obra = getTableView().getItems().get(getIndex());
+                    baixarArquivo(obra);
+                });
             }
 
             @Override
@@ -184,6 +195,10 @@ public class GerenciarObrasController implements DashboardController {
 
                 Obra obra = getTableView().getItems().get(getIndex());
                 HBox box = new HBox(8);
+
+                // Baixar disponível sempre, independente do status, para o
+                // gerente poder ler a obra a qualquer momento.
+                box.getChildren().add(btnBaixar);
 
                 // Designar: só aparece se a obra estiver em análise e sem avaliador
                 if (obra.getStatus() == 0 && obra.getAvaliador() == null) {
@@ -440,6 +455,49 @@ public class GerenciarObrasController implements DashboardController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Baixa (copia para onde o gerente escolher) o arquivo anexado à obra —
+     * mesmo fluxo usado na tela do Avaliador.
+     */
+    private void baixarArquivo(Obra obra) {
+        String caminho = obra.getArquivo();
+        if (caminho == null || caminho.isBlank()) {
+            mostrarAlerta("Aviso", "Esta obra não possui arquivo anexado.");
+            return;
+        }
+        File origem = new File(caminho);
+        if (!origem.exists()) {
+            mostrarAlerta("Aviso", "O arquivo da obra não foi encontrado:\n" + caminho);
+            return;
+        }
+
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Baixar arquivo da obra");
+        fc.setInitialFileName(nomeSugerido(origem.getName()));
+        File destino = fc.showSaveDialog(tblObras.getScene().getWindow());
+        if (destino == null) return;
+
+        try {
+            Files.copy(origem.toPath(), destino.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            mostrarAlertaInfo("Sucesso", "Arquivo salvo em:\n" + destino.getAbsolutePath());
+        } catch (IOException e) {
+            e.printStackTrace();
+            mostrarAlerta("Erro", "Não foi possível baixar o arquivo: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Remove o prefixo de unicidade ("<millis>_") usado no armazenamento,
+     * sugerindo o nome original do arquivo no diálogo de download.
+     */
+    private String nomeSugerido(String nomeArmazenado) {
+        int sep = nomeArmazenado.indexOf('_');
+        if (sep > 0 && nomeArmazenado.substring(0, sep).matches("\\d+")) {
+            return nomeArmazenado.substring(sep + 1);
+        }
+        return nomeArmazenado;
     }
 
     private void mostrarAlerta(String titulo, String mensagem) {

@@ -113,6 +113,30 @@ public abstract class UsuarioDAO<T extends Usuario> implements BaseDAO<T> {
             }
             stmt.executeBatch();
         }
+
+        // ERRO CORRIGIDO: salvar em usuario_perfil não bastava — as tabelas
+        // "autor", "avaliador" e "gerente" também precisam ter a linha
+        // correspondente, pois "obra" referencia autor.id/avaliador.id (não
+        // usuario.id direto) via FOREIGN KEY. Sem isso, qualquer usuário que
+        // ganhasse um perfil novo (ex.: um Autor promovido a Avaliador pelo
+        // Gerente) conseguia logar, mas operações que dependem dessas tabelas
+        // específicas falhavam com "foreign key constraint fails".
+        for (Perfil perfil : perfis) {
+            salvarVinculoTabelaDePerfil(usuarioId, perfil);
+        }
+    }
+
+    private void salvarVinculoTabelaDePerfil(long usuarioId, Perfil perfil) throws SQLException {
+        String tabela = switch (perfil) {
+            case AUTOR -> "autor";
+            case AVALIADOR -> "avaliador";
+            case GERENTE -> "gerente";
+        };
+        String sql = "INSERT IGNORE INTO " + tabela + " (id) VALUES (?)";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, usuarioId);
+            stmt.executeUpdate();
+        }
     }
 
     protected Set<Perfil> buscarPerfis(long usuarioId) throws SQLException {
