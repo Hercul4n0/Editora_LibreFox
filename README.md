@@ -165,6 +165,9 @@ Editora_LibreFox/
         ├── CSS/                    → estilo visual (style.css)
         └── Images/                 → ícones usados na interface
 ```
+## Diagrama UML
+
+Para ver o diagrama UML, basta abrir a pasta *docs* e abrir o diagrama-uml.md no proprio github
 
 ## Problemas comuns
 
