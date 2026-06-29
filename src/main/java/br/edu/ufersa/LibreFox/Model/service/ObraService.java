@@ -57,8 +57,10 @@ public class ObraService {
 
         // A tabela "obra" usa chave primária String (não AUTO_INCREMENT); o
         // identificador é gerado aqui caso o autor ainda não tenha definido um.
+        // Segue a convenção "OBRA001" do mini mundo, mantendo o id curto o
+        // suficiente para caber na coluna (um UUID de 36 chars estourava o limite).
         if (obra.getId() == null || obra.getId().isBlank()) {
-            obra.setId(java.util.UUID.randomUUID().toString());
+            obra.setId(gerarProximoId());
         }
 
         // Toda obra entra no fluxo "em avaliação", recém-submetida.
@@ -68,6 +70,25 @@ public class ObraService {
         obraDAO.inserir(obra);
         obra.getAutor().getObrasEnviadas().add(obra);
         return obra;
+    }
+
+    /**
+     * Gera o próximo id de obra no padrão "OBRA000", baseado no maior sufixo
+     * numérico já existente. Mantém o id curto (cabe na coluna) e legível.
+     */
+    private String gerarProximoId() throws SQLException {
+        int maior = 0;
+        for (Obra existente : obraDAO.listar()) {
+            String id = existente.getId();
+            if (id != null && id.startsWith("OBRA")) {
+                try {
+                    maior = Math.max(maior, Integer.parseInt(id.substring(4)));
+                } catch (NumberFormatException ignored) {
+                    // ids fora do padrão são apenas ignorados na numeração
+                }
+            }
+        }
+        return String.format("OBRA%03d", maior + 1);
     }
 
     // -------------------------------------------------------------------------

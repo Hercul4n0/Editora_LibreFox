@@ -29,8 +29,8 @@ public class ObraDAO implements BaseDAO<Obra> {
         validarCamposObrigatorios(obra);
 
         String sql = """
-                INSERT INTO obra (id, titulo, genero, ano, status, autor_id, data_submissao)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO obra (id, titulo, genero, ano, status, autor_id, data_submissao, arquivo)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
@@ -41,6 +41,7 @@ public class ObraDAO implements BaseDAO<Obra> {
             stmt.setShort(5, obra.getStatus());
             stmt.setLong(6, obra.getAutor().getId());
             stmt.setDate(7, Date.valueOf(obra.getDataSubmissao()));
+            stmt.setString(8, obra.getArquivo());
             stmt.executeUpdate();
         }
         return obra;
@@ -74,7 +75,7 @@ public class ObraDAO implements BaseDAO<Obra> {
                 UPDATE obra
                 SET titulo = ?, genero = ?, ano = ?, status = ?,
                     autor_id = ?, avaliador_id = ?,
-                    data_submissao = ?, data_avaliacao = ?
+                    data_submissao = ?, data_avaliacao = ?, arquivo = ?
                 WHERE id = ?
                 """;
 
@@ -97,7 +98,8 @@ public class ObraDAO implements BaseDAO<Obra> {
             else
                 stmt.setNull(8, Types.DATE);
 
-            stmt.setString(9, obra.getId());
+            stmt.setString(9, obra.getArquivo());
+            stmt.setString(10, obra.getId());
             stmt.executeUpdate();
         }
     }
@@ -263,6 +265,8 @@ public class ObraDAO implements BaseDAO<Obra> {
 
         Date dataAval = rs.getDate("data_avaliacao");
         if (dataAval != null) obra.setDataAvaliacao(dataAval.toLocalDate());
+
+        obra.setArquivo(rs.getString("arquivo"));
 
         long avaliadorId = rs.getLong("avaliador_id");
         if (!rs.wasNull()) {

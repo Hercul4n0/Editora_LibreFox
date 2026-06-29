@@ -6,6 +6,8 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
@@ -30,16 +32,25 @@
 
             <Label text="MENU" styleClass="label-menu-secao"/>
 
-            <Button fx:id="btnHome" text="🏠 Página principal" styleClass="btn-lateral, btn-lateral-ativo"
-                    maxWidth="Infinity" onAction="#navegarHome"/>
-            <Button fx:id="btnObrasAtribuidas" text="📚 Obras atribuídas" styleClass="btn-lateral"
-                    maxWidth="Infinity" onAction="#navegarObrasAtribuidas"/>
+            <Button fx:id="btnHome" text="Página principal" styleClass="btn-lateral, btn-lateral-ativo"
+                    maxWidth="Infinity" onAction="#navegarHome">
+                <graphic><ImageView fitWidth="18" fitHeight="18" preserveRatio="true">
+                    <image><Image url="@../Images/home.png"/></image></ImageView></graphic>
+            </Button>
+            <Button fx:id="btnObrasAtribuidas" text="Obras atribuídas" styleClass="btn-lateral"
+                    maxWidth="Infinity" onAction="#navegarObrasAtribuidas">
+                <graphic><ImageView fitWidth="18" fitHeight="18" preserveRatio="true">
+                    <image><Image url="@../Images/obras.png"/></image></ImageView></graphic>
+            </Button>
 
             <VBox spacing="4" VBox.vgrow="ALWAYS"/>
 
             <HBox alignment="CENTER">
-                <Button fx:id="btnSair" text="🚪 Sair" styleClass="btn-sair"
-                        onAction="#handleSair"/>
+                <Button fx:id="btnSair" text="Sair" styleClass="btn-sair"
+                        onAction="#handleSair">
+                    <graphic><ImageView fitWidth="18" fitHeight="18" preserveRatio="true">
+                        <image><Image url="@../Images/sair.png"/></image></ImageView></graphic>
+                </Button>
             </HBox>
         </VBox>
 
@@ -88,7 +99,7 @@
                         <TableColumn fx:id="colGenero" text="Gênero" prefWidth="120"/>
                         <TableColumn fx:id="colAutor" text="Autor" prefWidth="150"/>
                         <TableColumn fx:id="colFeedback" text="Feedback" prefWidth="150"/>
-                        <TableColumn fx:id="colAcoes" text="Ações" prefWidth="100"/>
+                        <TableColumn fx:id="colAcoes" text="Ações" prefWidth="200"/>
                     </columns>
                 </TableView>
             </VBox>

@@ -6,6 +6,8 @@
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
@@ -30,16 +32,34 @@
 
             <Label text="MENU" styleClass="label-menu-secao"/>
 
-            <Button text="🏠 Página principal" styleClass="btn-lateral" maxWidth="Infinity" onAction="#navegarHome"/>
-            <Button text="👤 Gerenciar autores" styleClass="btn-lateral" maxWidth="Infinity" onAction="#navegarAutores"/>
-            <Button text="⭐ Gerenciar avaliadores" styleClass="btn-lateral, btn-lateral-ativo" maxWidth="Infinity"/>
-            <Button text="📚 Gerenciar obra" styleClass="btn-lateral" maxWidth="Infinity" onAction="#navegarObras"/>
-            <Button text="📊 Relatórios" styleClass="btn-lateral" maxWidth="Infinity" onAction="#navegarRelatorios"/>
+            <Button text="Página principal" styleClass="btn-lateral" maxWidth="Infinity" onAction="#navegarHome">
+                <graphic><ImageView fitWidth="18" fitHeight="18" preserveRatio="true">
+                    <image><Image url="@../Images/home.png"/></image></ImageView></graphic>
+            </Button>
+            <Button text="Gerenciar autores" styleClass="btn-lateral" maxWidth="Infinity" onAction="#navegarAutores">
+                <graphic><ImageView fitWidth="18" fitHeight="18" preserveRatio="true">
+                    <image><Image url="@../Images/autores.png"/></image></ImageView></graphic>
+            </Button>
+            <Button text="Gerenciar avaliadores" styleClass="btn-lateral, btn-lateral-ativo" maxWidth="Infinity">
+                <graphic><ImageView fitWidth="18" fitHeight="18" preserveRatio="true">
+                    <image><Image url="@../Images/avaliadores.png"/></image></ImageView></graphic>
+            </Button>
+            <Button text="Gerenciar obra" styleClass="btn-lateral" maxWidth="Infinity" onAction="#navegarObras">
+                <graphic><ImageView fitWidth="18" fitHeight="18" preserveRatio="true">
+                    <image><Image url="@../Images/obras.png"/></image></ImageView></graphic>
+            </Button>
+            <Button text="Relatórios" styleClass="btn-lateral" maxWidth="Infinity" onAction="#navegarRelatorios">
+                <graphic><ImageView fitWidth="18" fitHeight="18" preserveRatio="true">
+                    <image><Image url="@../Images/relatorio.png"/></image></ImageView></graphic>
+            </Button>
 
             <VBox spacing="4" VBox.vgrow="ALWAYS"/>
 
             <HBox alignment="CENTER">
-                <Button text="🚪 Sair" styleClass="btn-sair" onAction="#handleSair"/>
+                <Button text="Sair" styleClass="btn-sair" onAction="#handleSair">
+                    <graphic><ImageView fitWidth="18" fitHeight="18" preserveRatio="true">
+                        <image><Image url="@../Images/sair.png"/></image></ImageView></graphic>
+                </Button>
             </HBox>
         </VBox>
 
@@ -54,9 +74,15 @@
             <HBox spacing="12" alignment="CENTER_LEFT">
                 <TextField fx:id="campoBusca" promptText="Buscar avaliadores..." styleClass="campo-busca"
                            maxWidth="300"/>
-                <Button text="🔍 Buscar" styleClass="btn-azul-claro" onAction="#handleBuscar"/>
+                <Button text="Buscar" styleClass="btn-azul-claro" onAction="#handleBuscar">
+                    <graphic><ImageView fitWidth="16" fitHeight="16" preserveRatio="true">
+                        <image><Image url="@../Images/buscar.png"/></image></ImageView></graphic>
+                </Button>
                 <HBox HBox.hgrow="ALWAYS"/>
-                <Button text="➕ Novo avaliador" styleClass="btn-primario" onAction="#handleNovoAvaliador"/>
+                <Button text="Novo avaliador" styleClass="btn-primario" onAction="#handleNovoAvaliador">
+                    <graphic><ImageView fitWidth="16" fitHeight="16" preserveRatio="true">
+                        <image><Image url="@../Images/adicionar.png"/></image></ImageView></graphic>
+                </Button>
             </HBox>
 
             <TableView fx:id="tblAvaliadores" VBox.vgrow="ALWAYS">

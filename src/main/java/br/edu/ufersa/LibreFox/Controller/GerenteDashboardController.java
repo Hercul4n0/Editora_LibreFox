@@ -5,6 +5,7 @@ import br.edu.ufersa.LibreFox.Model.entities.Sessao;
 import br.edu.ufersa.LibreFox.Model.exceptions.AcessoNegadoException;
 import br.edu.ufersa.LibreFox.Model.service.ObraService;
 import br.edu.ufersa.LibreFox.util.Conexao;
+import br.edu.ufersa.LibreFox.util.Icones;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -124,20 +125,26 @@ public class GerenteDashboardController implements DashboardController {
                 }
                 Label label = new Label(item);
                 label.getStyleClass().add("badge-status");
+                String icone = null;
                 if (item.equals("Em análise")) {
                     label.getStyleClass().add("badge-avaliacao");
+                    icone = "status-analise.png";
                 } else if (item.equals("Aprovado")) {
                     label.getStyleClass().add("badge-aprovado");
+                    icone = "status-aprovado.png";
                 } else if (item.equals("Rejeitado")) {
                     label.getStyleClass().add("badge-rejeitado");
+                    icone = "status-rejeitado.png";
                 }
+                if (icone != null) label.setGraphic(Icones.icone(icone, 14));
                 setGraphic(label);
                 setText(null);
             }
         });
         colAcoes.setCellFactory(col -> new TableCell<>() {
-            private final Button btnAvaliar = new Button("📋 Avaliar");
+            private final Button btnAvaliar = new Button("Avaliar");
             {
+                btnAvaliar.setGraphic(Icones.icone("avaliar.png", 16));
                 btnAvaliar.getStyleClass().add("btn-acao");
                 btnAvaliar.setOnAction(e -> {
                     // A avaliação em si só pode ser feita pelo avaliador designado
@@ -211,12 +218,9 @@ public class GerenteDashboardController implements DashboardController {
                 ((DashboardController) controller).setSessao(sessao);
             }
 
-            Stage stage = (Stage) tblObras.getScene().getWindow();
-            Scene scene = new Scene(root, 1200, 800);
-            scene.getStylesheets().add(getClass().getResource(CSS_PATH).toExternalForm());
-            stage.setScene(scene);
-            stage.setMaximized(true);
-            stage.show();
+            // Troca apenas o conteúdo (root) da Scene atual, preservando o
+            // estado da janela (tamanho e, principalmente, o modo maximizado).
+            tblObras.getScene().setRoot(root);
 
         } catch (IOException e) {
             e.printStackTrace();

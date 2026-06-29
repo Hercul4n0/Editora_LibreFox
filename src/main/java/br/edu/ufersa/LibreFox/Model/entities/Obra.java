@@ -12,6 +12,7 @@ public class Obra {
     private Avaliador avaliador;
     private LocalDate dataSubmissao;   // quando o autor enviou a obra
     private LocalDate dataAvaliacao;   // quando o avaliador deu o veredicto
+    private String arquivo;            // caminho do arquivo da obra (txt/pdf/docx)
 
     // ERRO CORRIGIDO 10: havia um segundo construtor que deixava "genero" e "ano"
     // sempre nulos. Como esses campos são obrigatórios pelo mini mundo (toda Obra
@@ -81,4 +82,7 @@ public class Obra {
     public void setDataAvaliacao(LocalDate dataAvaliacao) {
         if (dataAvaliacao != null) this.dataAvaliacao = dataAvaliacao;
     }
+
+    public String getArquivo() { return arquivo; }
+    public void setArquivo(String arquivo) { this.arquivo = arquivo; }
 }

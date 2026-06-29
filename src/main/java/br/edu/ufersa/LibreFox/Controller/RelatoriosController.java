@@ -7,6 +7,7 @@ import br.edu.ufersa.LibreFox.Model.entities.Obra;
 import br.edu.ufersa.LibreFox.Model.entities.Relatorio;
 import br.edu.ufersa.LibreFox.Model.entities.Sessao;
 import br.edu.ufersa.LibreFox.util.Conexao;
+import br.edu.ufersa.LibreFox.util.Icones;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -128,11 +129,15 @@ public class RelatoriosController implements DashboardController {
                 }
                 Label label = new Label(item);
                 label.getStyleClass().add("badge-status");
+                String icone = null;
                 if (item.equals("Aprovado")) {
                     label.getStyleClass().add("badge-aprovado");
+                    icone = "status-aprovado.png";
                 } else if (item.equals("Rejeitado")) {
                     label.getStyleClass().add("badge-rejeitado");
+                    icone = "status-rejeitado.png";
                 }
+                if (icone != null) label.setGraphic(Icones.icone(icone, 14));
                 setGraphic(label);
                 setText(null);
             }
@@ -245,12 +250,8 @@ public class RelatoriosController implements DashboardController {
             if (controller instanceof DashboardController) {
                 ((DashboardController) controller).setSessao(sessao);
             }
-            Stage stage = (Stage) tblRelatorio.getScene().getWindow();
-            Scene scene = new Scene(root, 1200, 800);
-            scene.getStylesheets().add(getClass().getResource("/CSS/style.css").toExternalForm());
-            stage.setScene(scene);
-            stage.setMaximized(true);
-            stage.show();
+            // Troca apenas o root da Scene atual, preservando o modo maximizado.
+            tblRelatorio.getScene().setRoot(root);
         } catch (IOException e) {
             e.printStackTrace();
         }

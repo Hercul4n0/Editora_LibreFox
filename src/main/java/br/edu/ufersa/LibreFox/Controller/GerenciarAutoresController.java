@@ -4,6 +4,7 @@ import br.edu.ufersa.LibreFox.Model.DAO.AutorDAO;
 import br.edu.ufersa.LibreFox.Model.entities.Autor;
 import br.edu.ufersa.LibreFox.Model.entities.Sessao;
 import br.edu.ufersa.LibreFox.util.Conexao;
+import br.edu.ufersa.LibreFox.util.Icones;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -67,9 +68,11 @@ public class GerenciarAutoresController implements DashboardController {
                 new SimpleStringProperty(String.valueOf(cell.getValue().getObrasEnviadas().size())));
 
         colAcoes.setCellFactory(col -> new TableCell<>() {
-            private final Button btnEditar = new Button("✏️ Editar");
-            private final Button btnExcluir = new Button("🗑️ Excluir");
+            private final Button btnEditar = new Button("Editar");
+            private final Button btnExcluir = new Button("Excluir");
             {
+                btnEditar.setGraphic(Icones.icone("editar.png", 16));
+                btnExcluir.setGraphic(Icones.icone("deletar-lixeira.png", 16));
                 btnEditar.getStyleClass().addAll("btn-acao", "btn-acao-azul");
                 btnExcluir.getStyleClass().addAll("btn-acao", "btn-acao-vermelho");
                 btnEditar.setOnAction(e -> {
@@ -170,12 +173,8 @@ public class GerenciarAutoresController implements DashboardController {
             if (controller instanceof DashboardController) {
                 ((DashboardController) controller).setSessao(sessao);
             }
-            Stage stage = (Stage) tblAutores.getScene().getWindow();
-            Scene scene = new Scene(root, 1200, 800);
-            scene.getStylesheets().add(getClass().getResource("/CSS/style.css").toExternalForm());
-            stage.setScene(scene);
-            stage.setMaximized(true);
-            stage.show();
+            // Troca apenas o root da Scene atual, preservando o modo maximizado.
+            tblAutores.getScene().setRoot(root);
         } catch (IOException e) {
             e.printStackTrace();
         }
