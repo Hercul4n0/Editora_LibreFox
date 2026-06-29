@@ -10,3 +10,5 @@ public class AcessoNegadoException extends Exception {
         super(mensagem, causa);
     }
 }
+
+// Nega acesso caso o usuario tente fazer algo q só outro tipo faz

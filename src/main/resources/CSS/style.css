@@ -1,14 +1,4 @@
-/* ============================================================
-   LibreFox — Folha de estilos
-   Paleta extraída do protótipo (PDF) do projeto:
-     - Roxo  (sidebar / painel esquerdo do login): #8B0F9D
-     - Roxo escuro (gradiente, canto superior)   : #4B0066
-     - Magenta (gradiente, meio)                  : #B23FB0
-     - Laranja (ações primárias, destaques, logo) : #E85D04
-     - Laranja escuro (hover)                     : #C94E03
-   ============================================================ */
 
-/* ---------- RESET E BASE ---------- */
 * {
     -fx-font-family: "Segoe UI";
 }
@@ -250,9 +240,6 @@
     -fx-cursor: hand;
 }
 
-/* Botões pequenos de ação nas tabelas (editar / excluir / avaliar / designar).
-   Só ícone, sem texto: numa célula com vários botões, texto sempre acaba
-   sendo cortado ("..."); o ícone com tooltip resolve isso sem perder clareza. */
 .btn-acao {
     -fx-background-radius: 8;
     -fx-padding: 6;

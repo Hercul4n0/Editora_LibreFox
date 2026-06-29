@@ -10,3 +10,5 @@ public class OperacaoInvalidaException extends Exception {
         super(mensagem, causa);
     }
 }
+
+// Impede de realizar operações com dados inválidos.

@@ -1,6 +1,3 @@
--- =========================
--- ENDERECO
--- =========================
 CREATE TABLE endereco (
                           id BIGINT AUTO_INCREMENT PRIMARY KEY,
                           numero VARCHAR(20) NOT NULL,
@@ -10,9 +7,6 @@ CREATE TABLE endereco (
                           uf CHAR(2) NOT NULL
 );
 
--- =========================
--- USUARIO
--- =========================
 CREATE TABLE usuario (
                          id BIGINT AUTO_INCREMENT PRIMARY KEY,
                          nome VARCHAR(150) NOT NULL,
@@ -27,9 +21,6 @@ CREATE TABLE usuario (
                                  ON DELETE CASCADE
 );
 
--- =========================
--- AUTOR
--- =========================
 CREATE TABLE autor (
                        id BIGINT PRIMARY KEY,
 
@@ -39,9 +30,6 @@ CREATE TABLE autor (
                                ON DELETE CASCADE
 );
 
--- =========================
--- AVALIADOR
--- =========================
 CREATE TABLE avaliador (
                            id BIGINT PRIMARY KEY,
 
@@ -51,9 +39,6 @@ CREATE TABLE avaliador (
                                    ON DELETE CASCADE
 );
 
--- =========================
--- GERENTE
--- =========================
 CREATE TABLE gerente (
                          id BIGINT PRIMARY KEY,
 
@@ -63,9 +48,6 @@ CREATE TABLE gerente (
                                  ON DELETE CASCADE
 );
 
--- =========================
--- OBRA
--- =========================
 CREATE TABLE obra (
                       id VARCHAR(30) PRIMARY KEY,
                       titulo VARCHAR(200) NOT NULL,
@@ -79,8 +61,6 @@ CREATE TABLE obra (
                       data_submissao DATE NOT NULL,
                       data_avaliacao DATE NULL,
 
-    -- Caminho do arquivo (txt/pdf/docx) que o autor anexou com o
-    -- conteúdo da obra a ser avaliado. Veja util/ArquivoObra.java.
                       arquivo VARCHAR(500) NULL,
 
                       CONSTRAINT fk_obra_autor
@@ -94,12 +74,6 @@ CREATE TABLE obra (
                               ON DELETE SET NULL
 );
 
--- =========================
--- NOTIFICACAO
--- =========================
--- Gerada pelos observadores de ObraService (Observer pattern) a cada evento
--- do ciclo de vida da obra. Veja Model/service/ObraEventListener.java e
--- Model/service/NotificacaoObserver.java.
 CREATE TABLE notificacao (
                              id BIGINT AUTO_INCREMENT PRIMARY KEY,
                              usuario_id BIGINT NOT NULL,

@@ -1,14 +1,3 @@
--- =============================================================
--- LibreFox — Migração: adicionar coluna "feedback" à tabela obra
--- =============================================================
--- O avaliador já podia escrever um comentário no diálogo de avaliação,
--- mas esse texto nunca era salvo em lugar nenhum — a coluna não existia.
--- Esta migração adiciona "feedback" à tabela obra, sem apagar nada.
---
--- Como executar:
---   No MySQL Shell:  \sql  então  \source caminho/para/este/arquivo.sql
--- =============================================================
-
 USE librefox_editora;
 
 SET @coluna_existe := (
