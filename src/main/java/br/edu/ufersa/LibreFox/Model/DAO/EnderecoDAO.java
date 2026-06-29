@@ -15,10 +15,6 @@ public class EnderecoDAO {
         this.connection = connection;
     }
 
-    // -------------------------------------------------------------------------
-    // CREATE
-    // -------------------------------------------------------------------------
-
     public void salvar(Endereco endereco) throws SQLException {
         String sql = """
                 INSERT INTO endereco (numero, bairro, logradouro, cidade, uf)
@@ -36,10 +32,6 @@ public class EnderecoDAO {
             }
         }
     }
-
-    // -------------------------------------------------------------------------
-    // READ
-    // -------------------------------------------------------------------------
 
     public Endereco buscarPorId(long id) throws SQLException {
         String sql = "SELECT * FROM endereco WHERE id = ?";
@@ -64,9 +56,6 @@ public class EnderecoDAO {
         return lista;
     }
 
-    // -------------------------------------------------------------------------
-    // UPDATE
-    // -------------------------------------------------------------------------
 
     public void atualizar(Endereco endereco) throws SQLException {
         String sql = """
@@ -82,10 +71,6 @@ public class EnderecoDAO {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // DELETE
-    // -------------------------------------------------------------------------
-
     public void deletar(long id) throws SQLException {
         String sql = "DELETE FROM endereco WHERE id = ?";
 
@@ -95,9 +80,8 @@ public class EnderecoDAO {
         }
     }
 
-    // -------------------------------------------------------------------------
+
     // HELPERS
-    // -------------------------------------------------------------------------
 
     private void preencherStatement(PreparedStatement stmt, Endereco e) throws SQLException {
         stmt.setString(1, e.getNumero());

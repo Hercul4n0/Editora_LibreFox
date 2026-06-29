@@ -5,11 +5,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import br.edu.ufersa.LibreFox.Model.service.NotificacaoObserver;
+import br.edu.ufersa.LibreFox.Model.service.ObraService;
 import br.edu.ufersa.LibreFox.util.Conexao;
 import java.io.IOException;
 import java.net.URL;
-import br.edu.ufersa.LibreFox.Controller.AvaliadorDashboardController;
-import org.w3c.dom.ls.LSOutput;
 
 /**
  * Ponto de entrada da aplicação LibreFox.
@@ -29,6 +29,12 @@ public class TesteJavaFX extends Application {
 
     @Override
     public void start(Stage stage) {
+        // Observer pattern: ObraService é o Subject; este é o ponto único de
+        // registro dos observadores (hoje, só o de notificações). Registrar
+        // aqui — e não dentro de ObraService — mantém o Subject desacoplado
+        // de qualquer implementação concreta de observador.
+        ObraService.registrarListener(new NotificacaoObserver());
+
         try {
             URL fxmlUrl = getClass().getResource(VIEW_LOGIN);
             if (fxmlUrl == null) {

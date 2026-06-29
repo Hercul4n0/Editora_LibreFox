@@ -12,6 +12,7 @@ import br.edu.ufersa.LibreFox.Model.service.ObraServiceProxy;
 import br.edu.ufersa.LibreFox.util.ArquivoObra;
 import br.edu.ufersa.LibreFox.util.Conexao;
 import br.edu.ufersa.LibreFox.util.Icones;
+import br.edu.ufersa.LibreFox.util.NotificacoesUI;
 import br.edu.ufersa.LibreFox.util.SeletorPerfil;
 import br.edu.ufersa.LibreFox.util.UsuarioLookup;
 import javafx.beans.property.SimpleStringProperty;
@@ -54,6 +55,7 @@ public class AutorDashboardController implements DashboardController {
     @FXML private TableColumn<Obra, String> colFeedback;
     @FXML private TableColumn<Obra, String> colAcoes;
     @FXML private Button btnTrocarPerfil;
+    @FXML private Button btnNotificacoes;
 
     private Sessao sessao;
     private final ObservableList<Obra> obrasList = FXCollections.observableArrayList();
@@ -67,10 +69,17 @@ public class AutorDashboardController implements DashboardController {
             btnTrocarPerfil.setVisible(temMaisDeUmPerfil);
             btnTrocarPerfil.setManaged(temMaisDeUmPerfil);
         }
+        if (btnNotificacoes != null) {
+            NotificacoesUI.atualizar(btnNotificacoes, sessao.getUsuarioId());
+        }
         carregarDados();
     }
 
-    /** Permite trocar para outro perfil da mesma conta, sem precisar logar de novo. */
+    @FXML
+    private void handleNotificacoes() {
+        NotificacoesUI.mostrarEMarcarLidas(btnNotificacoes, sessao.getUsuarioId());
+    }
+
     @FXML
     private void handleTrocarPerfil() {
         Set<Perfil> outros = new HashSet<>(sessao.getUsuario().getPerfis());

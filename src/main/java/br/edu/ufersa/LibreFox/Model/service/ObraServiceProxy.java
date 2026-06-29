@@ -4,6 +4,7 @@ import br.edu.ufersa.LibreFox.Model.entities.Avaliador;
 import br.edu.ufersa.LibreFox.Model.entities.Obra;
 import br.edu.ufersa.LibreFox.Model.entities.Sessao;
 import br.edu.ufersa.LibreFox.Model.exceptions.AcessoNegadoException;
+import br.edu.ufersa.LibreFox.Model.exceptions.OperacaoInvalidaException;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -55,7 +56,7 @@ public class ObraServiceProxy implements IObraService {
 
     @Override
     public void designarAvaliador(Obra obra, Avaliador avaliador, Sessao sessao)
-            throws SQLException, AcessoNegadoException {
+            throws SQLException, AcessoNegadoException, OperacaoInvalidaException {
         if (obra == null || avaliador == null) {
             throw new IllegalArgumentException("Obra e avaliador são obrigatórios.");
         }
@@ -63,7 +64,7 @@ public class ObraServiceProxy implements IObraService {
             throw new AcessoNegadoException("Apenas o gerente pode designar avaliadores.");
         }
         if (obra.getAutor() != null && obra.getAutor().getId() == avaliador.getId()) {
-            throw new IllegalArgumentException(
+            throw new OperacaoInvalidaException(
                     "O autor de uma obra não pode ser designado avaliador da própria obra.");
         }
         obraServiceReal.designarAvaliador(obra, avaliador, sessao);
@@ -71,13 +72,13 @@ public class ObraServiceProxy implements IObraService {
 
     @Override
     public void avaliar(Obra obra, short novoStatus, Sessao sessao)
-            throws SQLException, AcessoNegadoException {
+            throws SQLException, AcessoNegadoException, OperacaoInvalidaException {
         avaliar(obra, novoStatus, null, sessao);
     }
 
     @Override
     public void avaliar(Obra obra, short novoStatus, String feedback, Sessao sessao)
-            throws SQLException, AcessoNegadoException {
+            throws SQLException, AcessoNegadoException, OperacaoInvalidaException {
         if (obra == null) {
             throw new IllegalArgumentException("Obra não pode ser nula.");
         }

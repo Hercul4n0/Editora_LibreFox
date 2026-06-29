@@ -5,6 +5,7 @@ import br.edu.ufersa.LibreFox.Model.entities.Avaliador;
 import br.edu.ufersa.LibreFox.Model.entities.Obra;
 import br.edu.ufersa.LibreFox.Model.entities.Sessao;
 import br.edu.ufersa.LibreFox.Model.exceptions.AcessoNegadoException;
+import br.edu.ufersa.LibreFox.Model.exceptions.OperacaoInvalidaException;
 import br.edu.ufersa.LibreFox.Model.service.IObraService;
 import br.edu.ufersa.LibreFox.Model.service.ObraServiceProxy;
 import br.edu.ufersa.LibreFox.util.Conexao;
@@ -31,15 +32,6 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
-/**
- * Tela "Gerenciar obras" — uso exclusivo do Gerente.
- *
- * Importante: o status da obra (Em análise / Aprovado / Rejeitado) NÃO é
- * editável livremente aqui. A regra de negócio d) do enunciado diz que
- * "somente o avaliador designado pode avaliar a obra" — então a transição
- * de status só acontece pelo fluxo de avaliação (AvaliadorDashboard),
- * nunca por uma edição direta do gerente.
- */
 public class GerenciarObrasController implements DashboardController {
 
     private static final String CSS_PATH = "/CSS/style.css";
@@ -318,7 +310,7 @@ public class GerenciarObrasController implements DashboardController {
                         mostrarAlerta("Erro", "Erro ao designar avaliador: " + e.getMessage());
                     } catch (AcessoNegadoException e) {
                         mostrarAlerta("Acesso negado", e.getMessage());
-                    } catch (IllegalStateException e) {
+                    } catch (OperacaoInvalidaException e) {
                         mostrarAlerta("Aviso", e.getMessage());
                     }
                 }

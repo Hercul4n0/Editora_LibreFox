@@ -15,13 +15,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-/**
- * Cadastro público (auto-cadastro). Somente o perfil Autor pode se
- * autocadastrar aqui — Avaliadores e Gerentes só podem ser criados por um
- * Gerente já autenticado, na tela "Gerenciar avaliadores" (regra de negócio
- * do enunciado: "todos os projetos devem permitir ao gerente cadastrar
- * funcionários com acesso ao sistema").
- */
 public class CadastroController {
 
     private static final String CSS_PATH = "/CSS/style.css";

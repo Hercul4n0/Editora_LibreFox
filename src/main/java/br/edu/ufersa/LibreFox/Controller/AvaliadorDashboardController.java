@@ -5,11 +5,13 @@ import br.edu.ufersa.LibreFox.Model.entities.Perfil;
 import br.edu.ufersa.LibreFox.Model.entities.Sessao;
 import br.edu.ufersa.LibreFox.Model.entities.Usuario;
 import br.edu.ufersa.LibreFox.Model.exceptions.AcessoNegadoException;
+import br.edu.ufersa.LibreFox.Model.exceptions.OperacaoInvalidaException;
 import br.edu.ufersa.LibreFox.Model.service.IObraService;
 import br.edu.ufersa.LibreFox.Model.service.ObraService;
 import br.edu.ufersa.LibreFox.Model.service.ObraServiceProxy;
 import br.edu.ufersa.LibreFox.util.Conexao;
 import br.edu.ufersa.LibreFox.util.Icones;
+import br.edu.ufersa.LibreFox.util.NotificacoesUI;
 import br.edu.ufersa.LibreFox.util.SeletorPerfil;
 import br.edu.ufersa.LibreFox.util.UsuarioLookup;
 import javafx.beans.property.SimpleStringProperty;
@@ -54,6 +56,7 @@ public class AvaliadorDashboardController implements DashboardController {
     @FXML private TableColumn<Obra, String> colFeedback;
     @FXML private TableColumn<Obra, String> colAcoes;
     @FXML private Button btnTrocarPerfil;
+    @FXML private Button btnNotificacoes;
 
     private Sessao sessao;
     private final ObservableList<Obra> obrasList = FXCollections.observableArrayList();
@@ -67,7 +70,15 @@ public class AvaliadorDashboardController implements DashboardController {
             btnTrocarPerfil.setVisible(temMaisDeUmPerfil);
             btnTrocarPerfil.setManaged(temMaisDeUmPerfil);
         }
+        if (btnNotificacoes != null) {
+            NotificacoesUI.atualizar(btnNotificacoes, sessao.getUsuarioId());
+        }
         carregarDados();
+    }
+
+    @FXML
+    private void handleNotificacoes() {
+        NotificacoesUI.mostrarEMarcarLidas(btnNotificacoes, sessao.getUsuarioId());
     }
 
     /** Permite trocar para outro perfil da mesma conta, sem precisar logar de novo. */
@@ -202,11 +213,6 @@ public class AvaliadorDashboardController implements DashboardController {
         });
     }
 
-    /**
-     * Abre o diálogo "Aceitar obra / Rejeitar obra" (espelha a tela do
-     * protótipo) e persiste o veredicto através do ObraService, que garante
-     * que somente o avaliador designado pode avaliar a obra.
-     */
     private void abrirDialogoAvaliacao(Obra obra) {
         Dialog<Short> dialog = new Dialog<>();
         dialog.setTitle("Avaliar obra");
@@ -249,7 +255,7 @@ public class AvaliadorDashboardController implements DashboardController {
                 mostrarAlerta("Erro", "Erro ao registrar avaliação: " + e.getMessage());
             } catch (AcessoNegadoException e) {
                 mostrarAlerta("Acesso negado", e.getMessage());
-            } catch (IllegalStateException e) {
+            } catch (OperacaoInvalidaException e) {
                 mostrarAlerta("Aviso", e.getMessage());
             }
         });
@@ -283,7 +289,6 @@ public class AvaliadorDashboardController implements DashboardController {
         }
     }
 
-    /** Abre o arquivo da obra no aplicativo padrão do sistema. */
     private void abrirArquivo(Obra obra) {
         String caminho = obra.getArquivo();
         if (caminho == null || caminho.isBlank()) {
@@ -337,10 +342,6 @@ public class AvaliadorDashboardController implements DashboardController {
         }
     }
 
-    /**
-     * Remove o prefixo de unicidade ("<millis>_") usado no armazenamento,
-     * sugerindo o nome original do arquivo no diálogo de download.
-     */
     private String nomeSugerido(String nomeArmazenado) {
         int sep = nomeArmazenado.indexOf('_');
         if (sep > 0 && nomeArmazenado.substring(0, sep).matches("\\d+")) {

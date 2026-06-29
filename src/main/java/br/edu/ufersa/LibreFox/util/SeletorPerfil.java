@@ -9,16 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Diálogo para o usuário escolher, entre os perfis que sua conta possui,
- * com qual deseja entrar/trocar (usado no login e na troca de perfil dentro
- * dos dashboards).
- */
 public final class SeletorPerfil {
 
     private SeletorPerfil() {}
 
-    /** Mostra o diálogo e devolve o perfil escolhido, ou {@code null} se cancelado. */
+
     public static Perfil escolher(Set<Perfil> perfisDisponiveis) {
         List<Perfil> ordem = new ArrayList<>(perfisDisponiveis);
 

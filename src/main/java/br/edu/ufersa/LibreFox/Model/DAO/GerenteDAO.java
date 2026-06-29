@@ -13,10 +13,6 @@ public class GerenteDAO extends UsuarioDAO<Gerente> {
     }
 
 
-    // -------------------------------------------------------------------------
-    // br.edu.ufersa.LibreFox.editora.DAO.BaseDAO — CREATE
-    // -------------------------------------------------------------------------
-
     @Override
     public Gerente inserir(Gerente gerente) throws SQLException {
         enderecoDAO.salvar(gerente.getEndereco());
@@ -25,10 +21,6 @@ public class GerenteDAO extends UsuarioDAO<Gerente> {
         salvarPerfis(id, gerente.getPerfis());
         return gerente;
     }
-
-    // -------------------------------------------------------------------------
-    // br.edu.ufersa.LibreFox.editora.DAO.BaseDAO — READ
-    // -------------------------------------------------------------------------
 
     @Override
     public ArrayList<Gerente> listar() throws SQLException {
@@ -47,10 +39,6 @@ public class GerenteDAO extends UsuarioDAO<Gerente> {
         return lista;
     }
 
-    // -------------------------------------------------------------------------
-    // br.edu.ufersa.LibreFox.editora.DAO.BaseDAO — UPDATE
-    // -------------------------------------------------------------------------
-
     @Override
     public void atualizar(Gerente gerente) throws SQLException {
         enderecoDAO.atualizar(gerente.getEndereco());
@@ -58,18 +46,12 @@ public class GerenteDAO extends UsuarioDAO<Gerente> {
         atualizarPerfis(gerente.getId(), gerente.getPerfis());
     }
 
-    // -------------------------------------------------------------------------
-    // br.edu.ufersa.LibreFox.editora.DAO.BaseDAO — DELETE
-    // -------------------------------------------------------------------------
-
     @Override
     public void deletar(Gerente gerente) throws SQLException {
         deletarUsuario(gerente.getId());
     }
 
-    // -------------------------------------------------------------------------
     // BUSCAS ESPECÍFICAS
-    // -------------------------------------------------------------------------
 
     public Gerente buscarPorId(long id) throws SQLException {
         String sql = """
@@ -119,16 +101,6 @@ public class GerenteDAO extends UsuarioDAO<Gerente> {
         return null;
     }
 
-    // -------------------------------------------------------------------------
-    // MAPEAMENTO
-    // -------------------------------------------------------------------------
-
-    // ERRO CORRIGIDO 9: mapear() usava o construtor de perfil único, sempre
-    // hardcoded para {GERENTE}, descartando silenciosamente qualquer outro
-    // perfil (AUTOR/AVALIADOR) que o usuário tivesse na tabela usuario_perfil.
-    // Isso também tornava o construtor multi-perfil do Gerente inútil, pois
-    // nada nunca lia de volta esses dados. Corrigido para chamar buscarPerfis,
-    // no mesmo padrão de br.edu.ufersa.LibreFox.editora.DAO.AutorDAO e br.edu.ufersa.LibreFox.editora.DAO.AvaliadorDAO.
     @Override
     protected Gerente mapear(ResultSet rs) throws SQLException {
         long id = rs.getLong("id");

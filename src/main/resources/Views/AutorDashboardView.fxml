@@ -73,6 +73,8 @@
                     <Label styleClass="label-descricao" text="Acompanhe suas obras"/>
                 </VBox>
                 <HBox HBox.hgrow="ALWAYS"/>
+                <Button fx:id="btnNotificacoes" text="🔔" styleClass="btn-secundario"
+                        onAction="#handleNotificacoes" visible="false" managed="false"/>
                 <Button text="Nova obra" styleClass="btn-primario" onAction="#handleNovaObra">
                     <graphic><ImageView fitWidth="16" fitHeight="16" preserveRatio="true">
                         <image><Image url="@../Images/adicionar.png"/></image></ImageView></graphic>

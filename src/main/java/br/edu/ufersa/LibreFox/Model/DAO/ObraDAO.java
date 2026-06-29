@@ -20,10 +20,6 @@ public class ObraDAO implements BaseDAO<Obra> {
         this.avaliadorDAO = new AvaliadorDAO(connection);
     }
 
-    // -------------------------------------------------------------------------
-    // br.edu.ufersa.LibreFox.editora.DAO.BaseDAO — CREATE
-    // -------------------------------------------------------------------------
-
     @Override
     public Obra inserir(Obra obra) throws SQLException {
         validarCamposObrigatorios(obra);
@@ -47,10 +43,6 @@ public class ObraDAO implements BaseDAO<Obra> {
         return obra;
     }
 
-    // -------------------------------------------------------------------------
-    // br.edu.ufersa.LibreFox.editora.DAO.BaseDAO — READ
-    // -------------------------------------------------------------------------
-
     @Override
     public ArrayList<Obra> listar() throws SQLException {
         String sql = "SELECT * FROM obra ORDER BY titulo";
@@ -62,10 +54,6 @@ public class ObraDAO implements BaseDAO<Obra> {
         }
         return lista;
     }
-
-    // -------------------------------------------------------------------------
-    // br.edu.ufersa.LibreFox.editora.DAO.BaseDAO — UPDATE
-    // -------------------------------------------------------------------------
 
     @Override
     public void atualizar(Obra obra) throws SQLException {
@@ -105,10 +93,6 @@ public class ObraDAO implements BaseDAO<Obra> {
         }
     }
 
-    // -------------------------------------------------------------------------
-    // br.edu.ufersa.LibreFox.editora.DAO.BaseDAO — DELETE
-    // -------------------------------------------------------------------------
-
     @Override
     public void deletar(Obra obra) throws SQLException {
         String sql = "DELETE FROM obra WHERE id = ?";
@@ -118,10 +102,6 @@ public class ObraDAO implements BaseDAO<Obra> {
             stmt.executeUpdate();
         }
     }
-
-    // -------------------------------------------------------------------------
-    // BUSCAS
-    // -------------------------------------------------------------------------
 
     public Obra buscarPorId(String id) throws SQLException {
         String sql = "SELECT * FROM obra WHERE id = ?";

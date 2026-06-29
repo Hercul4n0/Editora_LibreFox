@@ -8,12 +8,6 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.Set;
 
-/**
- * Classe base abstrata para todos os DAOs de usuário.
- * Implementa br.edu.ufersa.LibreFox.editora.DAO.BaseDAO<T> garantindo o contrato do sistema,
- * e centraliza a lógica comum de SQL para evitar duplicação
- * em br.edu.ufersa.LibreFox.editora.DAO.AutorDAO, br.edu.ufersa.LibreFox.editora.DAO.AvaliadorDAO e br.edu.ufersa.LibreFox.editora.DAO.GerenteDAO.
- */
 public abstract class UsuarioDAO<T extends Usuario> implements BaseDAO<T> {
 
     protected final Connection connection;
@@ -23,10 +17,6 @@ public abstract class UsuarioDAO<T extends Usuario> implements BaseDAO<T> {
         this.connection = connection;
         this.enderecoDAO = new EnderecoDAO(connection);
     }
-
-    // -------------------------------------------------------------------------
-    // CONTRATO br.edu.ufersa.LibreFox.editora.DAO.BaseDAO — subclasses implementam com suas próprias queries
-    // -------------------------------------------------------------------------
 
     @Override
     public abstract T inserir(T objeto) throws SQLException;
@@ -39,10 +29,6 @@ public abstract class UsuarioDAO<T extends Usuario> implements BaseDAO<T> {
 
     @Override
     public abstract ArrayList<T> listar() throws SQLException;
-
-    // -------------------------------------------------------------------------
-    // SQL COMUM — reutilizado pelas subclasses
-    // -------------------------------------------------------------------------
 
     protected long inserirUsuario(T usuario) throws SQLException {
         String sql = """
@@ -98,9 +84,6 @@ public abstract class UsuarioDAO<T extends Usuario> implements BaseDAO<T> {
         if (enderecoId >= 0) enderecoDAO.deletar(enderecoId);
     }
 
-    // -------------------------------------------------------------------------
-    // PERFIS — reutilizado por todas as subclasses
-    // -------------------------------------------------------------------------
 
     protected void salvarPerfis(long usuarioId, Set<Perfil> perfis) throws SQLException {
         String sql = "INSERT INTO usuario_perfil (usuario_id, perfil) VALUES (?, ?)";
@@ -114,13 +97,6 @@ public abstract class UsuarioDAO<T extends Usuario> implements BaseDAO<T> {
             stmt.executeBatch();
         }
 
-        // ERRO CORRIGIDO: salvar em usuario_perfil não bastava — as tabelas
-        // "autor", "avaliador" e "gerente" também precisam ter a linha
-        // correspondente, pois "obra" referencia autor.id/avaliador.id (não
-        // usuario.id direto) via FOREIGN KEY. Sem isso, qualquer usuário que
-        // ganhasse um perfil novo (ex.: um Autor promovido a Avaliador pelo
-        // Gerente) conseguia logar, mas operações que dependem dessas tabelas
-        // específicas falhavam com "foreign key constraint fails".
         for (Perfil perfil : perfis) {
             salvarVinculoTabelaDePerfil(usuarioId, perfil);
         }

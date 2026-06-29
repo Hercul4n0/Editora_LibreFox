@@ -17,10 +17,6 @@ import java.util.Set;
 
 public class LoginController {
 
-    // -------------------------------------------------------------------------
-    // Caminhos de recurso — relativos à raiz do classpath (src/main/resources).
-    // Os FXML moram em "Views/" e o CSS em "CSS/", NÃO em "br/edu/ufersa/...".
-    // -------------------------------------------------------------------------
     private static final String CSS_PATH = "/CSS/style.css";
     private static final String VIEW_LOGIN = "/Views/LoginView.fxml";
     private static final String VIEW_CADASTRO = "/Views/CadastroView.fxml";
@@ -43,10 +39,7 @@ public class LoginController {
         }
 
         try (Connection conn = Conexao.getConnection()) {
-            // A conta é localizada tentando cada perfil — qualquer um que
-            // encontre a linha já traz o conjunto COMPLETO de perfis do
-            // usuário (UsuarioDAO.buscarPerfis carrega tudo, não só o
-            // perfil usado no filtro da consulta).
+            // A conta é localizada tentando cada perfil
             Usuario usuario = null;
             for (Perfil perfil : Perfil.values()) {
                 usuario = UsuarioLookup.buscarPorLoginEPerfil(conn, login, perfil);
@@ -71,11 +64,8 @@ public class LoginController {
 
             // Conta com mais de um perfil: deixa o usuário escolher como entrar.
             Perfil perfilEscolhido = SeletorPerfil.escolher(perfisDisponiveis);
-            if (perfilEscolhido == null) return; // cancelou a escolha
+            if (perfilEscolhido == null) return;
 
-            // Refaz a busca com o DAO do perfil escolhido para obter o
-            // objeto no subtipo certo (Autor/Avaliador/Gerente) — os
-            // dashboards dependem desse tipo certo para fazer cast.
             Usuario usuarioTipado = UsuarioLookup.buscarPorLoginEPerfil(conn, login, perfilEscolhido);
             Sessao sessao = new Sessao(usuarioTipado, perfilEscolhido);
             abrirDashboard(sessao);

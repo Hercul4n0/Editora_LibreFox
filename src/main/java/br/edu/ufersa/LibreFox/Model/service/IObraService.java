@@ -4,6 +4,7 @@ import br.edu.ufersa.LibreFox.Model.entities.Avaliador;
 import br.edu.ufersa.LibreFox.Model.entities.Obra;
 import br.edu.ufersa.LibreFox.Model.entities.Sessao;
 import br.edu.ufersa.LibreFox.Model.exceptions.AcessoNegadoException;
+import br.edu.ufersa.LibreFox.Model.exceptions.OperacaoInvalidaException;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -25,13 +26,13 @@ public interface IObraService {
     void excluir(Obra obra, Sessao sessao) throws SQLException, AcessoNegadoException;
 
     void designarAvaliador(Obra obra, Avaliador avaliador, Sessao sessao)
-            throws SQLException, AcessoNegadoException;
+            throws SQLException, AcessoNegadoException, OperacaoInvalidaException;
 
     void avaliar(Obra obra, short novoStatus, Sessao sessao)
-            throws SQLException, AcessoNegadoException;
+            throws SQLException, AcessoNegadoException, OperacaoInvalidaException;
 
     void avaliar(Obra obra, short novoStatus, String feedback, Sessao sessao)
-            throws SQLException, AcessoNegadoException;
+            throws SQLException, AcessoNegadoException, OperacaoInvalidaException;
 
     ArrayList<Obra> listarObrasDoAutor(Sessao sessao) throws SQLException, AcessoNegadoException;
 

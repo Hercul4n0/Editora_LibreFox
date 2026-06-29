@@ -93,3 +93,22 @@ CREATE TABLE obra (
                               REFERENCES avaliador(id)
                               ON DELETE SET NULL
 );
+
+-- =========================
+-- NOTIFICACAO
+-- =========================
+-- Gerada pelos observadores de ObraService (Observer pattern) a cada evento
+-- do ciclo de vida da obra. Veja Model/service/ObraEventListener.java e
+-- Model/service/NotificacaoObserver.java.
+CREATE TABLE notificacao (
+                             id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                             usuario_id BIGINT NOT NULL,
+                             mensagem VARCHAR(500) NOT NULL,
+                             lida BOOLEAN NOT NULL DEFAULT FALSE,
+                             data_criacao DATETIME NOT NULL,
+
+                             CONSTRAINT fk_notificacao_usuario
+                                 FOREIGN KEY (usuario_id)
+                                     REFERENCES usuario(id)
+                                     ON DELETE CASCADE
+);

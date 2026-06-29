@@ -5,44 +5,34 @@ import br.edu.ufersa.LibreFox.Model.entities.Avaliador;
 import br.edu.ufersa.LibreFox.Model.entities.Obra;
 import br.edu.ufersa.LibreFox.Model.entities.Sessao;
 import br.edu.ufersa.LibreFox.Model.exceptions.AcessoNegadoException;
+import br.edu.ufersa.LibreFox.Model.exceptions.OperacaoInvalidaException;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
-/**
- * Casos de uso ligados a Obras — o coração do fluxo da editora.
- *
- * Concentra a orquestração e a autorização do ciclo de vida da obra:
- * <ul>
- *   <li>submissão pelo autor;</li>
- *   <li>designação de avaliador pelo gerente;</li>
- *   <li>avaliação pelo avaliador designado;</li>
- *   <li>visibilidade restrita (autor só vê as suas, avaliador só as designadas
- *       a ele, gerente vê o catálogo completo).</li>
- * </ul>
- *
- * O {@link ObraDAO} cuida apenas da persistência; toda regra de negócio mora aqui.
- * Violações de autorização lançam {@link AcessoNegadoException}, uma exceção
- * de domínio própria do LibreFox.
- */
 public class ObraService implements IObraService {
 
-    // Status da obra (convenção do mini mundo — ainda não é enum).
     public static final short EM_AVALIACAO = 0;
     public static final short ACEITA       = 1;
     public static final short REJEITADA    = 2;
 
+    private static final List<ObraEventListener> LISTENERS = new ArrayList<>();
+
+    public static void registrarListener(ObraEventListener listener) {
+        LISTENERS.add(listener);
+    }
+
+    private final Connection connection;
     private final ObraDAO obraDAO;
 
     public ObraService(Connection connection) {
+        this.connection = connection;
         this.obraDAO = new ObraDAO(connection);
     }
 
-    // -------------------------------------------------------------------------
-    // SUBMISSÃO — autor envia a própria obra
-    // -------------------------------------------------------------------------
 
     public Obra submeter(Obra obra, Sessao sessao) throws SQLException, AcessoNegadoException {
         if (obra == null) {
@@ -55,27 +45,19 @@ public class ObraService implements IObraService {
             throw new AcessoNegadoException("Um autor só pode submeter obras em seu próprio nome.");
         }
 
-        // A tabela "obra" usa chave primária String (não AUTO_INCREMENT); o
-        // identificador é gerado aqui caso o autor ainda não tenha definido um.
-        // Segue a convenção "OBRA001" do mini mundo, mantendo o id curto o
-        // suficiente para caber na coluna (um UUID de 36 chars estourava o limite).
         if (obra.getId() == null || obra.getId().isBlank()) {
             obra.setId(gerarProximoId());
         }
 
-        // Toda obra entra no fluxo "em avaliação", recém-submetida.
         obra.setStatus(EM_AVALIACAO);
         obra.setDataSubmissao(LocalDate.now());
 
         obraDAO.inserir(obra);
         obra.getAutor().getObrasEnviadas().add(obra);
+        notificarSubmissao(obra);
         return obra;
     }
 
-    /**
-     * Gera o próximo id de obra no padrão "OBRA000", baseado no maior sufixo
-     * numérico já existente. Mantém o id curto (cabe na coluna) e legível.
-     */
     private String gerarProximoId() throws SQLException {
         int maior = 0;
         for (Obra existente : obraDAO.listar()) {
@@ -91,10 +73,6 @@ public class ObraService implements IObraService {
         return String.format("OBRA%03d", maior + 1);
     }
 
-    // -------------------------------------------------------------------------
-    // ALTERAÇÃO / EXCLUSÃO — autor dono (enquanto em avaliação) ou gerente
-    // -------------------------------------------------------------------------
-
     public void alterar(Obra obra, Sessao sessao) throws SQLException, AcessoNegadoException {
         exigirDonoOuGerente(obra, sessao, "alterar");
         obraDAO.atualizar(obra);
@@ -105,12 +83,11 @@ public class ObraService implements IObraService {
         obraDAO.deletar(obra);
     }
 
-    // -------------------------------------------------------------------------
-    // DESIGNAÇÃO DE AVALIADOR — somente o gerente
-    // -------------------------------------------------------------------------
+
+    // Designação de avaliador
 
     public void designarAvaliador(Obra obra, Avaliador avaliador, Sessao sessao)
-            throws SQLException, AcessoNegadoException {
+            throws SQLException, AcessoNegadoException, OperacaoInvalidaException {
         if (obra == null || avaliador == null) {
             throw new IllegalArgumentException("Obra e avaliador são obrigatórios.");
         }
@@ -118,18 +95,19 @@ public class ObraService implements IObraService {
             throw new AcessoNegadoException("Apenas o gerente pode designar avaliadores.");
         }
         if (obra.getStatus() != EM_AVALIACAO) {
-            throw new IllegalStateException(
+            throw new OperacaoInvalidaException(
                     "Só é possível designar avaliador para obras em avaliação.");
         }
         // Regra de negócio: ninguém pode avaliar a própria obra, mesmo que a
         // mesma pessoa acumule os perfis Autor e Avaliador.
         if (obra.getAutor() != null && obra.getAutor().getId() == avaliador.getId()) {
-            throw new IllegalArgumentException(
+            throw new OperacaoInvalidaException(
                     "O autor de uma obra não pode ser designado avaliador da própria obra.");
         }
 
         obraDAO.definirAvaliador(obra, avaliador);
         obra.setAvaliador(avaliador);
+        notificarDesignacao(obra, avaliador);
     }
 
     // -------------------------------------------------------------------------
@@ -138,12 +116,12 @@ public class ObraService implements IObraService {
 
     /** Sobrecarga sem feedback, mantida por compatibilidade. */
     public void avaliar(Obra obra, short novoStatus, Sessao sessao)
-            throws SQLException, AcessoNegadoException {
+            throws SQLException, AcessoNegadoException, OperacaoInvalidaException {
         avaliar(obra, novoStatus, null, sessao);
     }
 
     public void avaliar(Obra obra, short novoStatus, String feedback, Sessao sessao)
-            throws SQLException, AcessoNegadoException {
+            throws SQLException, AcessoNegadoException, OperacaoInvalidaException {
         if (obra == null) {
             throw new IllegalArgumentException("Obra não pode ser nula.");
         }
@@ -155,11 +133,11 @@ public class ObraService implements IObraService {
             throw new AcessoNegadoException("Você não é o avaliador designado para esta obra.");
         }
         if (novoStatus != ACEITA && novoStatus != REJEITADA) {
-            throw new IllegalArgumentException(
+            throw new OperacaoInvalidaException(
                     "Avaliação deve resultar em ACEITA (1) ou REJEITADA (2).");
         }
         if (obra.getStatus() != EM_AVALIACAO) {
-            throw new IllegalStateException("Esta obra já foi avaliada.");
+            throw new OperacaoInvalidaException("Esta obra já foi avaliada.");
         }
 
         LocalDate hoje = LocalDate.now();
@@ -167,6 +145,7 @@ public class ObraService implements IObraService {
         obra.setStatus(novoStatus);
         obra.setDataAvaliacao(hoje);
         obra.setFeedback(feedback);
+        notificarAvaliacao(obra, novoStatus);
     }
 
     // -------------------------------------------------------------------------
@@ -224,6 +203,43 @@ public class ObraService implements IObraService {
      */
     public Obra buscarPorId(String id) throws SQLException {
         return obraDAO.buscarPorId(id);
+    }
+
+    // -------------------------------------------------------------------------
+    // OBSERVER — dispara os listeners registrados após cada transição já
+    // persistida com sucesso. Uma notificação é um efeito best-effort: se um
+    // listener falhar, o erro é só registrado (e os demais listeners ainda
+    // são chamados) — nunca desfaz a operação de negócio, que já foi salva.
+    // -------------------------------------------------------------------------
+
+    private void notificarSubmissao(Obra obra) {
+        for (ObraEventListener listener : LISTENERS) {
+            try {
+                listener.aoSubmeter(connection, obra);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void notificarDesignacao(Obra obra, Avaliador avaliador) {
+        for (ObraEventListener listener : LISTENERS) {
+            try {
+                listener.aoDesignarAvaliador(connection, obra, avaliador);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void notificarAvaliacao(Obra obra, short novoStatus) {
+        for (ObraEventListener listener : LISTENERS) {
+            try {
+                listener.aoAvaliar(connection, obra, novoStatus);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     // -------------------------------------------------------------------------

@@ -23,8 +23,7 @@ public final class Icones {
     }
 
 
-     //Cria um ImageView quadrado de {@code tamanho} px para o ícone,
-     //ou null se o arquivo não for encontrado.
+     //Cria um ImageView quadrado de {@code tamanho} px para o ícone, ou null se o arquivo não for encontrado.
     public static ImageView icone(String nome, double tamanho) {
         Image img = imagem(nome);
         if (img == null) return null;

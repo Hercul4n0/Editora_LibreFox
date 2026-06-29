@@ -17,15 +17,6 @@ public class RelatorioDAO {
         this.obraDAO = new ObraDAO(connection);
     }
 
-    // -------------------------------------------------------------------------
-    // CONSULTA: obras avaliadas em um dado período.
-    //
-    // A autorização (somente o gerente gera relatórios) fica no RelatorioService.
-    // -------------------------------------------------------------------------
-
-    /**
-     * Todas as obras avaliadas (aceitas ou rejeitadas) no período.
-     */
     public Relatorio gerarPorPeriodo(LocalDate dataInicial,
                                      LocalDate dataFinal) throws SQLException {
         String sql = """
@@ -43,9 +34,6 @@ public class RelatorioDAO {
         return relatorio;
     }
 
-    /**
-     * Obras avaliadas por um avaliador específico no período.
-     */
     public Relatorio gerarPorPeriodoEAvaliador(LocalDate dataInicial, LocalDate dataFinal,
                                                Avaliador avaliador) throws SQLException {
         String sql = """
@@ -65,10 +53,7 @@ public class RelatorioDAO {
         return relatorio;
     }
 
-    // -------------------------------------------------------------------------
     // HELPER
-    // -------------------------------------------------------------------------
-
     @FunctionalInterface
     private interface StatementFiller {
         void fill(PreparedStatement stmt) throws SQLException;

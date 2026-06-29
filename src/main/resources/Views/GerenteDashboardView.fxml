@@ -87,6 +87,8 @@
                     <Label styleClass="label-descricao" text="Aqui está o resumo da sua editora"/>
                 </VBox>
                 <HBox HBox.hgrow="ALWAYS"/>
+                <Button fx:id="btnNotificacoes" text="🔔" styleClass="btn-secundario"
+                        onAction="#handleNotificacoes" visible="false" managed="false"/>
             </HBox>
 
             <!-- CARDS DE RESUMO -->
