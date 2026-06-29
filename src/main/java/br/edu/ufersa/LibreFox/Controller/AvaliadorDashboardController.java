@@ -228,6 +228,7 @@ public class AvaliadorDashboardController implements DashboardController {
         File arquivo = new File(caminho);
         if (!arquivo.exists()) {
             mostrarAlerta("Aviso", "O arquivo da obra não foi encontrado:\n" + caminho);
+            //mostrarAlerta("Aviso",caminho);
             return;
         }
         if (!Desktop.isDesktopSupported()) {
@@ -249,9 +250,10 @@ public class AvaliadorDashboardController implements DashboardController {
             mostrarAlerta("Aviso", "Esta obra não possui arquivo anexado.");
             return;
         }
-        File origem = new File(caminho);
+        File origem = new File(caminho); // Recebe o pathname como parametro
         if (!origem.exists()) {
             mostrarAlerta("Aviso", "O arquivo da obra não foi encontrado:\n" + caminho);
+            //mostrarAlerta("Aviso",  caminho);
             return;
         }
 

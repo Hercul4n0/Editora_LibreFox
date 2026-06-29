@@ -53,6 +53,13 @@
                                    styleClass="campo-texto"/>
                     </VBox>
 
+                    <!-- CPF -->
+                    <VBox spacing="3">
+                        <Label text="CPF" style="-fx-font-weight: bold; -fx-text-fill: #333;"/>
+                        <TextField fx:id="campoCpf" promptText="Somente números"
+                                   styleClass="campo-texto"/>
+                    </VBox>
+
                     <!-- Senha -->
                     <VBox spacing="3">
                         <Label text="Senha" style="-fx-font-weight: bold; -fx-text-fill: #333;"/>

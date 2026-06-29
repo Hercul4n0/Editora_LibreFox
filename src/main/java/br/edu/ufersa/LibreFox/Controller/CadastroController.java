@@ -29,6 +29,7 @@ public class CadastroController {
 
     @FXML private TextField campoNome;
     @FXML private TextField campoEmail;
+    @FXML private TextField campoCpf;
     @FXML private PasswordField campoSenha;
     @FXML private Label lblMensagem;
 
@@ -36,11 +37,18 @@ public class CadastroController {
     private void handleCadastro() {
         String nome = campoNome.getText().trim();
         String email = campoEmail.getText().trim();
+        String cpf = campoCpf.getText().trim().replaceAll("\\D", ""); // remove pontuação, fica só números
         String senha = campoSenha.getText().trim();
 
-        if (nome.isEmpty() || email.isEmpty() || senha.isEmpty()) {
+        if (nome.isEmpty() || email.isEmpty() || cpf.isEmpty() || senha.isEmpty()) {
             lblMensagem.setStyle("-fx-text-fill: #dc3545;");
-            lblMensagem.setText("Preencha todos os campos!");
+            lblMensagem.setText("Preencha todos os campos, incluindo o CPF!");
+            return;
+        }
+
+        if (cpf.length() != 11) {
+            lblMensagem.setStyle("-fx-text-fill: #dc3545;");
+            lblMensagem.setText("CPF inválido — deve ter 11 números.");
             return;
         }
 
@@ -50,7 +58,7 @@ public class CadastroController {
 
         try (Connection conn = Conexao.getConnection()) {
             AutorService autorService = new AutorService(conn);
-            Autor autor = new Autor(nome, "", endereco, email, senha);
+            Autor autor = new Autor(nome, cpf, endereco, email, senha);
             autorService.cadastrar(autor);
 
             lblMensagem.setStyle("-fx-text-fill: #1e7e34;");
@@ -58,11 +66,18 @@ public class CadastroController {
 
             campoNome.clear();
             campoEmail.clear();
+            campoCpf.clear();
             campoSenha.clear();
 
         } catch (SQLException e) {
             lblMensagem.setStyle("-fx-text-fill: #dc3545;");
-            lblMensagem.setText("Erro ao cadastrar: " + e.getMessage());
+            if (e.getMessage() != null && e.getMessage().contains("usuario.cpf")) {
+                lblMensagem.setText("Já existe uma conta cadastrada com este CPF.");
+            } else if (e.getMessage() != null && e.getMessage().contains("usuario.login")) {
+                lblMensagem.setText("Já existe uma conta cadastrada com este e-mail.");
+            } else {
+                lblMensagem.setText("Erro ao cadastrar: " + e.getMessage());
+            }
             e.printStackTrace();
         }
     }

@@ -8,6 +8,8 @@ import javafx.stage.Stage;
 import br.edu.ufersa.LibreFox.util.Conexao;
 import java.io.IOException;
 import java.net.URL;
+import br.edu.ufersa.LibreFox.Controller.AvaliadorDashboardController;
+import org.w3c.dom.ls.LSOutput;
 
 /**
  * Ponto de entrada da aplicação LibreFox.
@@ -21,7 +23,6 @@ import java.net.URL;
  * navegação e qualquer funcionalidade que dependa do usuário logado.
  */
 public class TesteJavaFX extends Application {
-
 
     private static final String CSS_PATH = "/CSS/style.css";
     private static final String VIEW_LOGIN = "/Views/LoginView.fxml";
@@ -54,7 +55,9 @@ public class TesteJavaFX extends Application {
             System.err.println("Erro ao carregar a tela de login (" + VIEW_LOGIN + "):");
             e.printStackTrace();
         }
+
     }
+
 
     public static void main(String[] args) {
         launch(args);
